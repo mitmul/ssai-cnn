@@ -1,0 +1,17 @@
+.DS_Store
+.remote-sync.json
+
+data
+results
+*build
+*__pycache__*
+
+*.tif
+*.tiff
+*.png
+*.jpg
+*.pdf
+*.pyc
+*.c
+*.so
+*.out
