@@ -73,44 +73,46 @@ def get_model_optimizer(args):
 
 def create_minibatch(args, o_cur, l_cur, data_queue):
     trans = Transform(args)
-    x_minibatch = []
-    y_minibatch = []
-    while True:
-        o_key, o_val = o_cur.item()
-        l_key, l_val = l_cur.item()
-        if o_key != l_key:
-            raise ValueError(
-                'Keys of ortho and label patches are different: '
-                '{} != {}'.format(o_key, l_key))
+    skip = np.random.randint(args.N)
+    for _ in range(skip):
+        o_cur.next()
+        l_cur.next()
+    logging.info('random skip:{}'.format(skip))
+    for _ in range(0, args.N, args.batchsize):
+        x_minibatch = []
+        y_minibatch = []
+        for _ in range(args.batchsize):
+            o_key, o_val = o_cur.item()
+            l_key, l_val = l_cur.item()
+            if o_key != l_key:
+                raise ValueError(
+                    'Keys of ortho and label patches are different: '
+                    '{} != {}'.format(o_key, l_key))
 
-        # prepare patch
-        o_side = args.ortho_original_side
-        l_side = args.label_original_side
-        o_patch = np.fromstring(
-            o_val, dtype=np.uint8).reshape((o_side, o_side, 3))
-        l_patch = np.fromstring(
-            l_val, dtype=np.uint8).reshape((l_side, l_side, 1))
-        o_aug, l_aug = trans.transform(o_patch, l_patch)
+            # prepare patch
+            o_side = args.ortho_original_side
+            l_side = args.label_original_side
+            o_patch = np.fromstring(
+                o_val, dtype=np.uint8).reshape((o_side, o_side, 3))
+            l_patch = np.fromstring(
+                l_val, dtype=np.uint8).reshape((l_side, l_side, 1))
+            o_aug, l_aug = trans.transform(o_patch, l_patch)
 
-        # add patch
-        x_minibatch.append(o_aug)
-        y_minibatch.append(l_aug)
+            # add patch
+            x_minibatch.append(o_aug)
+            y_minibatch.append(l_aug)
 
-        o_ret = o_cur.next()
-        l_ret = l_cur.next()
+            o_ret = o_cur.next()
+            l_ret = l_cur.next()
+            if ((not o_ret) and (not l_ret)):
+                o_cur.first()
+                l_cur.first()
 
-        if ((len(x_minibatch) == args.batchsize)
-                or ((not o_ret) and (not l_ret))):
-            x_minibatch = np.asarray(
-                x_minibatch, dtype=np.float32).transpose((0, 3, 1, 2))
-            y_minibatch = np.asarray(
-                y_minibatch, dtype=np.int32).transpose((0, 3, 1, 2))
-            data_queue.put((x_minibatch, y_minibatch))
-            x_minibatch = []
-            y_minibatch = []
-
-        if ((not o_ret) and (not l_ret)):
-            break
+        x_minibatch = np.asarray(
+            x_minibatch, dtype=np.float32).transpose((0, 3, 1, 2))
+        y_minibatch = np.asarray(
+            y_minibatch, dtype=np.int32).transpose((0, 3, 1, 2))
+        data_queue.put((x_minibatch, y_minibatch))
 
     data_queue.put(None)
 
@@ -140,6 +142,7 @@ def one_epoch(args, model, optimizer, epoch, train):
                             args=(args, o_cur, l_cur, data_queue))
     mbatch_worker.start()
 
+    n_iter = 0
     sum_loss = 0
     num = 0
     while True:
@@ -158,6 +161,14 @@ def one_epoch(args, model, optimizer, epoch, train):
 
         sum_loss += float(model.loss.data) * t.data.shape[0]
         num += t.data.shape[0]
+        n_iter += 1
+
+        if train:
+            logging.info('epoch:{}\titer:{}\ttrain loss:{}'.format(
+                epoch, n_iter, sum_loss / num))
+        else:
+            logging.info('epoch:{}\titer:{}\tvalidate loss:{}'.format(
+                epoch, n_iter, sum_loss / num))
 
         del x, t
 
