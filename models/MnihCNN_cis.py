@@ -34,4 +34,4 @@ class MnihCNN_cis(Chain):
             self.pred = F.sigmoid(self.pred)
             return self.pred
 
-model = MnihCNN_multi()
+model = MnihCNN_cis()
