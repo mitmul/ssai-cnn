@@ -34,7 +34,7 @@ if __name__ == '__main__':
         o_patch = np.fromstring(
             o_val, dtype=np.uint8).reshape((92, 92, 3))
         l_patch = np.fromstring(
-            l_val, dtype=np.uint8).reshape((1, 24 * 24))
+            l_val, dtype=np.uint8).reshape((24 * 24))
         l_patch = np.hstack([l_patch == 0, l_patch == 1, l_patch == 2])
         l_patch = l_patch.reshape(
             (3, 24, 24)).transpose((1, 2, 0)).astype(np.uint8) * 255

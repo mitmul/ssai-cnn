@@ -6,6 +6,6 @@ from Cython.Build import cythonize
 import numpy
 
 setup(
-    ext_modules=cythonize('split_to_patches.pyx'),
+    ext_modules=cythonize('*.pyx'),
     include_dirs=[numpy.get_include()]
 )

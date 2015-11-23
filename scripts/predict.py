@@ -18,7 +18,7 @@ def get_args():
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--model', type=str)
     parser.add_argument('--param', type=str)
-    parser.add_argument('--test_dir', type=str)
+    parser.add_argument('--test_sat_dir', type=str)
     parser.add_argument('--sat_size', type=int, default=64)
     parser.add_argument('--map_size', type=int, default=16)
     parser.add_argument('--channels', type=int, default=1)
@@ -35,7 +35,7 @@ def create_minibatch(args, ortho, queue):
             for x in range(d, args.w_limit, args.map_size):
                 if ((y + args.sat_size > args.h_limit)
                         or (x + args.sat_size > args.w_limit)):
-                    break
+                    continue
                 # ortho patch
                 o_patch = ortho[
                     y:y + args.sat_size, x:x + args.sat_size, :].astype(
@@ -58,7 +58,7 @@ def tile_patches(args, canvas, queue):
             for x in range(d, args.w_limit, args.map_size):
                 if ((y + args.sat_size > args.h_limit)
                         or (x + args.sat_size > args.w_limit)):
-                    break
+                    continue
                 pred = queue.get()
                 if pred is None:
                     break
@@ -104,6 +104,10 @@ def get_predict(args, ortho, model):
     patch_worker.join()
     canvas_worker.join()
 
+    canvas = canvas[args.offset - 1: args.canvas_h - (args.offset - 1),
+                    args.offset - 1: args.canvas_w - (args.offset - 1)]
+    canvas /= args.offset
+
     return canvas
 
 
@@ -120,10 +124,14 @@ if __name__ == '__main__':
     out_dir = '{}/test'.format(os.path.dirname(args.model))
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
-    for fn in glob.glob('{}/*.tif*'.format(args.test_dir)):
+    for fn in glob.glob('{}/*.tif*'.format(args.test_sat_dir)):
         img = cv.imread(fn)
         pred = get_predict(args, img, model)
+
         out_fn = '{}/{}.png'.format(
             out_dir, os.path.splitext(os.path.basename(fn))[0])
-        print(pred.shape, pred.min(), pred.max())
         cv.imwrite(out_fn, pred * 255)
+
+        out_fn = '{}/{}.npy'.format(
+            out_dir, os.path.splitext(os.path.basename(fn))[0])
+        np.save(out_fn, pred)

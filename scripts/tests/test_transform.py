@@ -56,7 +56,7 @@ if __name__ == '__main__':
         o_patch = np.fromstring(o_val, dtype=np.uint8).reshape(
             (args.ortho_original_side, args.ortho_original_side, 3))
         l_patch = np.fromstring(l_val, dtype=np.uint8).reshape(
-            (args.label_original_side, args.label_original_side, 1))
+            (args.label_original_side, args.label_original_side))
 
         o_aug, l_aug = trans.transform(o_patch, l_patch)
         o_aug -= o_aug.min()

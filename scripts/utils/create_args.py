@@ -11,9 +11,9 @@ def create_args():
     parser.add_argument('--model', type=str,
                         default='models/MnihCNN_single.py')
     parser.add_argument('--gpu', type=int, default=0)
-    parser.add_argument('--epoch', type=int, default=10000)
+    parser.add_argument('--epoch', type=int, default=15)
     parser.add_argument('--batchsize', type=int, default=128)
-    parser.add_argument('--snapshot', type=int, default=10)
+    parser.add_argument('--snapshot', type=int, default=1)
 
     # Dataset paths
     parser.add_argument('--train_ortho_db', type=str,
@@ -39,7 +39,7 @@ def create_args():
     parser.add_argument('--crop', type=int, default=1)
 
     # Optimization settings
-    parser.add_argument('--opt', type=str, default='Adam',
+    parser.add_argument('--opt', type=str, default='MomentumSGD',
                         choices=['MomentumSGD', 'Adam', 'AdaGrad'])
     parser.add_argument('--weight_decay', type=float, default=0.0005)
     parser.add_argument('--alpha', type=float, default=0.001)
