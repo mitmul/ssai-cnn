@@ -48,13 +48,13 @@ def draw_loss(logfile, outfile):
     valid_epoch_loss = np.asarray(valid_epoch_loss)
 
     plt.clf()
-    plt.plot(train_iter_loss[:, 1], train_iter_loss[:, 2],
-             label='training loss')
-    plt.plot(valid_iter_loss[:, 1], valid_iter_loss[:, 2],
-             label='validation loss')
-    plt.scatter(train_epoch_loss[:, 0], train_epoch_loss[:, 1], c='b',
-                marker='x')
-    plt.scatter(valid_epoch_loss[:, 0], valid_epoch_loss[:, 1], c='g')
+    if args.draw_iters == 1:
+        plt.plot(train_iter_loss[:, 1], train_iter_loss[:, 2])
+        plt.plot(valid_iter_loss[:, 1], valid_iter_loss[:, 2])
+    plt.plot(train_epoch_loss[:, 0], train_epoch_loss[:, 1], c='b',
+             label='training loss', marker='x')
+    plt.plot(valid_epoch_loss[:, 0], valid_epoch_loss[:, 1], c='g',
+             label='validation loss', marker='x')
     plt.xlabel('epoch')
     plt.ylabel('loss')
 
@@ -66,6 +66,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--logfile', type=str, default='log.txt')
     parser.add_argument('--outfile', type=str, default='log.png')
+    parser.add_argument('--draw_iters', type=int, default=0)
     args = parser.parse_args()
 
     draw_loss(args.logfile, args.outfile)

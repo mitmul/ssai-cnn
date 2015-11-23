@@ -26,6 +26,7 @@ class MnihCNN_single(Chain):
 
         if t is not None:
             self.loss = F.sigmoid_cross_entropy(self.pred, t)
+            self.loss /= 16 * 16
             return self.loss
         else:
             self.pred = F.sigmoid(self.pred)

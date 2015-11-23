@@ -14,3 +14,9 @@ This contains all codes for replicating every results in my Ph. D. thesis.
 $ bash shells/download.sh
 $ bash shells/create_dataset.sh
 ```
+
+## Start Training
+
+```
+$ bash shells/train_batch.sh
+```

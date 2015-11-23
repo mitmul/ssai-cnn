@@ -19,6 +19,7 @@ class MnihCNN_cis(Chain):
             fc4=L.Linear(5120, 768),
         )
         self.train = True
+        self.c = 0  # inhibit channel 0
 
     def __call__(self, x, t):
         h = F.relu(self.conv1(x))
@@ -28,7 +29,8 @@ class MnihCNN_cis(Chain):
         self.pred = F.reshape(h, (x.data.shape[0], 3, 16, 16))
 
         if t is not None:
-            self.loss = cis(self.pred, t)
+            self.loss = cis(self.pred, t, self.c)
+            self.loss /= 16 * 16
             return self.loss
         else:
             self.pred = F.softmax(self.pred)

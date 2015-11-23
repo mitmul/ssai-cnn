@@ -26,6 +26,7 @@ class MnihCNN_multi(Chain):
 
         if t is not None:
             self.loss = F.softmax_cross_entropy(self.pred, t, normalize=False)
+            self.loss /= 16 * 16
             return self.loss
         else:
             self.pred = F.sigmoid(self.pred)
