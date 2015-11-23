@@ -25,7 +25,7 @@ class MnihCNN_multi(Chain):
         self.pred = F.reshape(h, (x.data.shape[0], 3, 16, 16))
 
         if t is not None:
-            self.loss = F.softmax_cross_entropy(self.pred, t)
+            self.loss = F.softmax_cross_entropy(self.pred, t, normalize=False)
             return self.loss
         else:
             self.pred = F.sigmoid(self.pred)
