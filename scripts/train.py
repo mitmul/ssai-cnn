@@ -58,7 +58,8 @@ def get_model_optimizer(args):
         # prepare optimizer
         if args.opt == 'MomentumSGD':
             optimizer = optimizers.MomentumSGD(lr=args.lr, momentum=0.9)
-            optimizer.add_hook(chainer.optimizer.WeightDecay(args.decay))
+            optimizer.add_hook(
+                chainer.optimizer.WeightDecay(args.weight_decay))
         elif args.opt == 'Adam':
             optimizer = optimizers.Adam(alpha=args.alpha)
         elif args.opt == 'AdaGrad':
