@@ -13,7 +13,6 @@ def create_args():
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--epoch', type=int, default=10000)
     parser.add_argument('--batchsize', type=int, default=128)
-    parser.add_argument('--prefix', type=str, default='MnihCNN')
     parser.add_argument('--snapshot', type=int, default=10)
 
     # Dataset paths
@@ -31,7 +30,6 @@ def create_args():
     parser.add_argument('--label_original_side', type=int, default=24)
     parser.add_argument('--ortho_side', type=int, default=64)
     parser.add_argument('--label_side', type=int, default=16)
-    parser.add_argument('--channels', type=int, default=1)
 
     # Options for data augmentation
     parser.add_argument('--fliplr', type=int, default=1)

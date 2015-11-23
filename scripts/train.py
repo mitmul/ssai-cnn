@@ -24,6 +24,8 @@ def create_result_dir(args):
     result_dir = 'results/{}_{}'.format(
         os.path.splitext(os.path.basename(args.model))[0],
         time.strftime('%Y-%m-%d_%H-%M-%S'))
+    if os.path.exists(result_dir):
+        result_dir += '_{}'.format(np.random.randint(100))
     if not os.path.exists(result_dir):
         os.makedirs(result_dir)
     log_fn = '%s/log.txt' % result_dir
@@ -73,7 +75,7 @@ def get_model_optimizer(args):
 
 def create_minibatch(args, o_cur, l_cur, data_queue):
     trans = Transform(args)
-    skip = np.random.randint(args.N)
+    skip = np.random.randint(args.batchsize)
     for _ in range(skip):
         o_cur.next()
         l_cur.next()
@@ -95,7 +97,7 @@ def create_minibatch(args, o_cur, l_cur, data_queue):
             o_patch = np.fromstring(
                 o_val, dtype=np.uint8).reshape((o_side, o_side, 3))
             l_patch = np.fromstring(
-                l_val, dtype=np.uint8).reshape((l_side, l_side, 1))
+                l_val, dtype=np.uint8).reshape((l_side, l_side))
             o_aug, l_aug = trans.transform(o_patch, l_patch)
 
             # add patch
@@ -110,8 +112,7 @@ def create_minibatch(args, o_cur, l_cur, data_queue):
 
         x_minibatch = np.asarray(
             x_minibatch, dtype=np.float32).transpose((0, 3, 1, 2))
-        y_minibatch = np.asarray(
-            y_minibatch, dtype=np.int32).transpose((0, 3, 1, 2))
+        y_minibatch = np.asarray(y_minibatch, dtype=np.int32)
         data_queue.put((x_minibatch, y_minibatch))
 
     data_queue.put(None)

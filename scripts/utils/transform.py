@@ -52,8 +52,8 @@ class Transform(object):
                                 oh / 2 + self.args.ortho_side / 2,
                                 ow / 2 - self.args.ortho_side / 2:
                                 ow / 2 + self.args.ortho_side / 2, :]
-        lh, lw, _ = self.label.shape
+        lh, lw = self.label.shape
         self.label = self.label[lh / 2 - self.args.label_side / 2:
                                 lh / 2 + self.args.label_side / 2,
                                 lw / 2 - self.args.label_side / 2:
-                                lw / 2 + self.args.label_side / 2, :]
+                                lw / 2 + self.args.label_side / 2]

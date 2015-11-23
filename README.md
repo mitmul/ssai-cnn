@@ -13,6 +13,4 @@ This contains all codes for replicating every results in my Ph. D. thesis.
 ```
 $ bash shells/download.sh
 $ bash shells/create_dataset.sh
-$ bash shells/test_dataset.sh
-$ bash shells/test_transform.sh
 ```
