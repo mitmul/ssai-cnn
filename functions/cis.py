@@ -23,10 +23,9 @@ class CIS(function.Function):
             x_type.dtype == numpy.float32,
             t_type.dtype == numpy.int32,
             x_type.ndim == 4,
-            t_type.ndim == 4,
+            t_type.ndim == 3,
             x_type.shape[0] == t_type.shape[0],
-            x_type.shape[2:] == t_type.shape[2:],
-            t_type.shape[1] == 1
+            x_type.shape[2:] == t_type.shape[1:]
         )
 
     def forward_gpu(self, inputs):
@@ -44,6 +43,7 @@ class CIS(function.Function):
         return ret,
 
     def backward_gpu(self, inputs, grad_outputs):
+        cupy = cuda.cupy
         x, t = inputs
         gloss = grad_outputs[0]
         n_unit = t.size // t.shape[0]
@@ -59,7 +59,8 @@ class CIS(function.Function):
                 gx = coeff[0] * (y - (c == t));
             }
             ''',
-            'cis_bwd')(self.y, t, coeff, x.shape[1], n_unit, self.c)
+            'cis_bwd')(self.y, cupy.expand_dims(t, 1), coeff, x.shape[1],
+                       n_unit, self.c)
         return gx, None
 
 

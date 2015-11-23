@@ -22,7 +22,7 @@ class TestCIS(unittest.TestCase):
         self.x = numpy.random.uniform(
             -1, 1, (10, 3, 5, 5)).astype(numpy.float32)
         self.t = numpy.random.randint(
-            0, 3, (10, 1, 5, 5,)).astype(numpy.int32)
+            0, 3, (10, 5, 5,)).astype(numpy.int32)
         self.c = 0
 
     def check_forward(self, x_data, t_data, use_cudnn=True):
@@ -36,13 +36,12 @@ class TestCIS(unittest.TestCase):
         # Compute expected value
         self.x[:, self.c, :, :] = 0
         y = numpy.exp(self.x)
-        print('y:', y.shape)
         loss_expect = 0.0
         for i in six.moves.range(y.shape[0]):
             y[i] = y[i] / y[i].sum(axis=0)
             for yy in six.moves.range(y.shape[2]):
                 for xx in six.moves.range(y.shape[3]):
-                    tt = t_data[i, 0, yy, xx]
+                    tt = t_data[i, yy, xx]
                     loss = y[i, tt, yy, xx]
                     loss_expect -= math.log(loss)
         loss_expect /= y.shape[0]
