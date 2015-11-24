@@ -6,6 +6,7 @@ import os
 sys.path.insert(0, 'scripts/utils')
 os.environ["CHAINER_TYPE_CHECK"] = "0"
 
+import six
 import time
 import imp
 import shutil
@@ -80,14 +81,15 @@ def get_model_optimizer(args):
 def create_minibatch(args, o_cur, l_cur, data_queue):
     trans = Transform(args)
     skip = np.random.randint(args.batchsize)
-    for _ in range(skip):
+    for _ in six.moves.range(skip):
         o_cur.next()
         l_cur.next()
     logging.info('random skip:{}'.format(skip))
-    for _ in range(0, args.N, args.batchsize):
+    for _ in six.moves.range(0, args.N, args.batchsize):
         x_minibatch = []
         y_minibatch = []
-        for _ in range(args.batchsize):
+        st = time.time()
+        for _ in six.moves.range(args.batchsize):
             o_key, o_val = o_cur.item()
             l_key, l_val = l_cur.item()
             if o_key != l_key:
@@ -118,7 +120,7 @@ def create_minibatch(args, o_cur, l_cur, data_queue):
             x_minibatch, dtype=np.float32).transpose((0, 3, 1, 2))
         y_minibatch = np.asarray(y_minibatch, dtype=np.int32)
         data_queue.put((x_minibatch, y_minibatch))
-
+        print(time.time() - st, 'sec for one minibatch')
     data_queue.put(None)
 
 
@@ -155,6 +157,7 @@ def one_epoch(args, model, optimizer, epoch, train):
         if minibatch is None:
             break
         x, t = minibatch
+        st = time.time()
         volatile = 'off' if train else 'on'
         x = Variable(xp.asarray(x), volatile=volatile)
         t = Variable(xp.asarray(t), volatile=volatile)
@@ -167,6 +170,7 @@ def one_epoch(args, model, optimizer, epoch, train):
         sum_loss += float(model.loss.data) * t.data.shape[0]
         num += t.data.shape[0]
         n_iter += 1
+        print(time.time() - st, 'sec for one backpropagation')
 
         if train:
             logging.info('epoch:{}\titer:{}\ttrain loss:{}'.format(
@@ -211,7 +215,7 @@ if __name__ == '__main__':
 
     # start logging
     logging.info('start training...')
-    for epoch in range(1, args.epoch + 1):
+    for epoch in six.moves.range(1, args.epoch + 1):
         # learning rate reduction
         if args.opt == 'MomentumSGD' and epoch % args.lr_decay_freq == 0:
             optimizer.lr *= args.lr_decay_ratio

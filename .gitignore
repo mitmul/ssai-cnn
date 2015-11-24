@@ -15,3 +15,5 @@ results
 *.c
 *.so
 *.out
+*.log
+*.json
