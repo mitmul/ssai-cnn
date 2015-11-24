@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def draw_loss(logfile, outfile, draw_iters):
+def draw_loss(logfile, outfile, draw_iters=False):
     train_epoch_loss = []
     train_iter_loss = []
     valid_epoch_loss = []
