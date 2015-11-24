@@ -15,8 +15,7 @@ cmake \
     -DENABLE_FAST_MATH=ON \
     -DBUILD_opencv_python2=OFF \
     -DBUILD_opencv_python3=ON \
-    -DBUILD_EXAMPLES=ON \
-    -DOPENCV_EXTRA_MODULES_PATH=$HOME/lib/opencv_contrib/modules \
+    -DBUILD_EXAMPLES=OFF \
     -DPYTHON3_EXECUTABLE=$HOME/anaconda3/bin/python \
     -DPYTHON3_INCLUDE_DIR=$HOME/anaconda3/include/python3.5m \
     -DPYTHON_INCLUDE_DIR2=$HOME/anaconda3/include/python3.5m \
@@ -24,7 +23,6 @@ cmake \
     -DPYTHON3_PACKAGES_PATH=$HOME/anaconda3/lib/python3.5/site-packages \
     -DPYTHON_INCLUDE_DIR=$HOME/anaconda3/include/python3.5m \
     -DPYTHON_LIBRARY=$HOME/anaconda3/lib/libpython3.so \
-    -DCUDA_FAST_MATH=ON \
     -DENABLE_AVX=ON \
     -DENABLE_SSE=ON \
     -DENABLE_SSE2=ON \
@@ -37,12 +35,11 @@ cmake \
     -DWITH_OPENCLAMDFFT=OFF \
     -DWITH_OPENCL_SVM=OFF \
     -DWITH_OPENEXR=OFF \
-    -DWITH_CUBLAS=ON \
-    -DWITH_CUDA=ON \
-    -DWITH_CUFFT=ON \
+    -DWITH_CUBLAS=OFF \
+    -DWITH_CUDA=OFF \
+    -DWITH_CUFFT=OFF \
     -DWITH_FFMPEG=ON \
     -DWITH_TBB=ON \
     -DTBB_INCLUDE_DIRS="/opt/intel/tbb/include" \
     -DTBB_STDDEF_PATH="/opt/intel/tbb/include/tbb/tbb_stddef.h" \
-    -Wno-dev ../ \
-    -DCMAKE_INSTALL_PREFIX=install
+    -Wno-dev ../

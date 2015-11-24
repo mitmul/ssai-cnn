@@ -36,6 +36,7 @@ class VGG_cis(Chain):
             fc8=L.Linear(4096, 768),
         )
         self.train = True
+        self.c = 0  # inhibit channel 0
 
     def __call__(self, x, t):
         h = F.relu(self.conv1_1(x))
