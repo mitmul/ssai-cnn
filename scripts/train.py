@@ -88,7 +88,6 @@ def create_minibatch(args, o_cur, l_cur, data_queue):
     for _ in six.moves.range(0, args.N, args.batchsize):
         x_minibatch = []
         y_minibatch = []
-        st = time.time()
         for _ in six.moves.range(args.batchsize):
             o_key, o_val = o_cur.item()
             l_key, l_val = l_cur.item()
@@ -120,7 +119,6 @@ def create_minibatch(args, o_cur, l_cur, data_queue):
             x_minibatch, dtype=np.float32).transpose((0, 3, 1, 2))
         y_minibatch = np.asarray(y_minibatch, dtype=np.int32)
         data_queue.put((x_minibatch, y_minibatch))
-        print(time.time() - st, 'sec for one minibatch')
     data_queue.put(None)
 
 
@@ -157,7 +155,6 @@ def one_epoch(args, model, optimizer, epoch, train):
         if minibatch is None:
             break
         x, t = minibatch
-        st = time.time()
         volatile = 'off' if train else 'on'
         x = Variable(xp.asarray(x), volatile=volatile)
         t = Variable(xp.asarray(t), volatile=volatile)
@@ -170,7 +167,6 @@ def one_epoch(args, model, optimizer, epoch, train):
         sum_loss += float(model.loss.data) * t.data.shape[0]
         num += t.data.shape[0]
         n_iter += 1
-        print(time.time() - st, 'sec for one backpropagation')
 
         if train:
             logging.info('epoch:{}\titer:{}\ttrain loss:{}'.format(
