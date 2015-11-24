@@ -4,6 +4,7 @@
 import sys
 import os
 sys.path.insert(0, 'scripts/utils')
+sys.path.insert(0, 'scripts/utils/transform')
 os.environ["CHAINER_TYPE_CHECK"] = "0"
 
 import six
@@ -15,20 +16,24 @@ import lmdb
 import chainer
 import numpy as np
 from chainer import cuda, optimizers, serializers, Variable
-from transform import Transform
+from transformer import transform
 from create_args import create_args
 from multiprocessing import Process, Queue
 from draw_loss import draw_loss
 
 
 def create_result_dir(args):
-    result_dir = 'results/{}_{}'.format(
-        os.path.splitext(os.path.basename(args.model))[0],
-        time.strftime('%Y-%m-%d_%H-%M-%S'))
-    if os.path.exists(result_dir):
-        result_dir += '_{}'.format(np.random.randint(100))
-    if not os.path.exists(result_dir):
-        os.makedirs(result_dir)
+    if args.resume_model is None:
+        result_dir = 'results/{}_{}'.format(
+            os.path.splitext(os.path.basename(args.model))[0],
+            time.strftime('%Y-%m-%d_%H-%M-%S'))
+        if os.path.exists(result_dir):
+            result_dir += '_{}'.format(np.random.randint(100))
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
+    else:
+        result_dir = os.path.dirname(args.resume)
+
     log_fn = '%s/log.txt' % result_dir
     logging.basicConfig(
         format='%(asctime)s [%(levelname)s] %(message)s',
@@ -78,48 +83,60 @@ def get_model_optimizer(args):
         return model
 
 
-def create_minibatch(args, o_cur, l_cur, data_queue):
-    trans = Transform(args)
+def create_minibatch(args, o_cur, l_cur, batch_queue):
     skip = np.random.randint(args.batchsize)
     for _ in six.moves.range(skip):
         o_cur.next()
         l_cur.next()
     logging.info('random skip:{}'.format(skip))
-    for _ in six.moves.range(0, args.N, args.batchsize):
-        x_minibatch = []
-        y_minibatch = []
-        for _ in six.moves.range(args.batchsize):
-            o_key, o_val = o_cur.item()
-            l_key, l_val = l_cur.item()
-            if o_key != l_key:
-                raise ValueError(
-                    'Keys of ortho and label patches are different: '
-                    '{} != {}'.format(o_key, l_key))
+    x_minibatch = []
+    y_minibatch = []
+    while True:
+        o_key, o_val = o_cur.item()
+        l_key, l_val = l_cur.item()
+        if o_key != l_key:
+            raise ValueError(
+                'Keys of ortho and label patches are different: '
+                '{} != {}'.format(o_key, l_key))
 
-            # prepare patch
-            o_side = args.ortho_original_side
-            l_side = args.label_original_side
-            o_patch = np.fromstring(
-                o_val, dtype=np.uint8).reshape((o_side, o_side, 3))
-            l_patch = np.fromstring(
-                l_val, dtype=np.uint8).reshape((l_side, l_side))
-            o_aug, l_aug = trans.transform(o_patch, l_patch)
+        # prepare patch
+        o_side = args.ortho_original_side
+        l_side = args.label_original_side
+        o_patch = np.fromstring(
+            o_val, dtype=np.uint8).reshape((o_side, o_side, 3))
+        l_patch = np.fromstring(
+            l_val, dtype=np.uint8).reshape((l_side, l_side, 1))
 
-            # add patch
-            x_minibatch.append(o_aug)
-            y_minibatch.append(l_aug)
+        # add patch
+        x_minibatch.append(o_patch)
+        y_minibatch.append(l_patch)
 
-            o_ret = o_cur.next()
-            l_ret = l_cur.next()
-            if ((not o_ret) and (not l_ret)):
-                o_cur.first()
-                l_cur.first()
+        o_ret = o_cur.next()
+        l_ret = l_cur.next()
+        if ((not o_ret) and (not l_ret)) or len(x_minibatch) == args.batchsize:
+            x_minibatch = np.asarray(x_minibatch, dtype=np.uint8)
+            y_minibatch = np.asarray(y_minibatch, dtype=np.uint8)
+            batch_queue.put((x_minibatch, y_minibatch))
+            x_minibatch = []
+            y_minibatch = []
 
-        x_minibatch = np.asarray(
-            x_minibatch, dtype=np.float32).transpose((0, 3, 1, 2))
-        y_minibatch = np.asarray(y_minibatch, dtype=np.int32)
-        data_queue.put((x_minibatch, y_minibatch))
-    data_queue.put(None)
+        if ((not o_ret) and (not l_ret)):
+            break
+
+    batch_queue.put(None)
+
+
+def apply_transform(args, batch_queue, aug_queue):
+    while True:
+        augs = batch_queue.get()
+        if augs is None:
+            break
+        x, y = augs
+        o_aug, l_aug = transform(
+            x, y, args.fliplr, args.rotate, args.norm, args.ortho_side,
+            args.ortho_side, 3, args.label_side, args.label_side)
+        aug_queue.put((o_aug, l_aug))
+    aug_queue.put(None)
 
 
 def get_cursor(db_fn):
@@ -142,19 +159,27 @@ def one_epoch(args, model, optimizer, epoch, train):
     l_cur, l_txn, _ = get_cursor(label_db)
 
     # for parallel augmentation
-    data_queue = Queue()
-    mbatch_worker = Process(target=create_minibatch,
-                            args=(args, o_cur, l_cur, data_queue))
-    mbatch_worker.start()
+    batch_queue = Queue()
+    batch_worker = Process(target=create_minibatch,
+                           args=(args, o_cur, l_cur, batch_queue))
+    batch_worker.start()
+    aug_queue = Queue()
+    aug_workers = [Process(target=apply_transform,
+                           args=(args, batch_queue, aug_queue))
+                   for _ in range(args.aug_threads)]
+    for w in aug_workers:
+        w.start()
 
     n_iter = 0
     sum_loss = 0
     num = 0
+    st = time.time()
     while True:
-        minibatch = data_queue.get()
+        minibatch = aug_queue.get()
         if minibatch is None:
             break
         x, t = minibatch
+
         volatile = 'off' if train else 'on'
         x = Variable(xp.asarray(x), volatile=volatile)
         t = Variable(xp.asarray(t), volatile=volatile)
@@ -177,6 +202,11 @@ def one_epoch(args, model, optimizer, epoch, train):
 
         del x, t
 
+    # wait for threads
+    batch_worker.join()
+    for w in aug_workers:
+        w.joint()
+
     if train and (epoch == 1 or epoch % args.snapshot == 0):
         model_fn = '{}/epoch-{}.model'.format(args.result_dir, epoch)
         opt_fn = '{}/epoch-{}.state'.format(args.result_dir, epoch)
@@ -189,8 +219,6 @@ def one_epoch(args, model, optimizer, epoch, train):
     else:
         logging.info(
             'epoch:{}\tvalidate loss:{}'.format(epoch, sum_loss / num))
-
-    mbatch_worker.join()
 
 
 if __name__ == '__main__':
@@ -205,9 +233,6 @@ if __name__ == '__main__':
 
     # create model and optimizer
     model, optimizer = get_model_optimizer(args)
-
-    # augmentation setting
-    trans = Transform(args)
 
     # start logging
     logging.info('start training...')

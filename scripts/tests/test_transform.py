@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import sys
-sys.path.insert(0, 'scripts/utils')
+sys.path.insert(0, 'scripts/utils/transform')
+import time
 import os
 import lmdb
 import argparse
 import numpy as np
 import cv2 as cv
-from transform import Transform
-from create_args import create_args
+from transformer import transform
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -34,8 +34,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    trans = Transform(args)
-
     if not os.path.exists(args.out_dir):
         os.mkdir(args.out_dir)
 
@@ -49,36 +47,52 @@ if __name__ == '__main__':
     label_cur = label_txn.cursor()
     label_cur.next()
 
-    for i in range(100):
+    o_batch = []
+    l_batch = []
+    for i in range(128):
         o_key, o_val = ortho_cur.item()
         l_key, l_val = label_cur.item()
 
         o_patch = np.fromstring(o_val, dtype=np.uint8).reshape(
             (args.ortho_original_side, args.ortho_original_side, 3))
         l_patch = np.fromstring(l_val, dtype=np.uint8).reshape(
-            (args.label_original_side, args.label_original_side))
+            (args.label_original_side, args.label_original_side, 1))
 
-        o_aug, l_aug = trans.transform(o_patch, l_patch)
-        o_aug -= o_aug.min()
-        o_aug /= o_aug.max()
-        o_aug *= 255
+        o_batch.append(o_patch)
+        l_batch.append(l_patch)
 
-        l_aug = l_aug.reshape(-1)
-        l_aug = np.hstack([l_aug == 0, l_aug == 1, l_aug == 2])
-        l_aug = l_aug.reshape(
+        ortho_cur.next()
+        label_cur.next()
+
+    st = time.time()
+    o_batch = np.asarray(o_batch, dtype=np.uint8)
+    l_batch = np.asarray(l_batch, dtype=np.uint8)
+
+    o_aug, l_aug = transform(
+        o_batch, l_batch, args.fliplr, args.rotate, args.norm, args.ortho_side,
+        args.ortho_side, 3, args.label_side, args.label_side)
+
+    print(time.time() - st, 'sec', o_aug.shape, l_aug.shape)
+
+    for i, (o, l) in enumerate(zip(o_aug, l_aug)):
+        o = o.transpose((1, 2, 0))
+        o = o - o.min()
+        o = o / o.max()
+        o *= 255
+
+        l = l.reshape(-1)
+        l = np.hstack([l == 0, l == 1, l == 2])
+        l = l.reshape(
             (3, 16, 16)).transpose((1, 2, 0)).astype(np.uint8) * 255
 
         canvas = np.zeros((args.ortho_side, args.ortho_side * 2, 3))
-        canvas[:, :args.ortho_side, :] = o_aug
-        canvas[:, args.ortho_side:, :] = o_aug
+        canvas[:, :args.ortho_side, :] = o
+        canvas[:, args.ortho_side:, :] = o
         canvas[args.ortho_side / 2 - args.label_side / 2:
                args.ortho_side / 2 + args.label_side / 2,
                args.ortho_side + args.ortho_side / 2 - args.label_side / 2:
                args.ortho_side + args.ortho_side / 2 + args.label_side / 2,
-               :] = l_aug
+               :] = l
         canvas = canvas.astype(np.uint8)
 
-        cv.imwrite('{}/{}.jpg'.format(args.out_dir, o_key), canvas)
-
-        ortho_cur.next()
-        label_cur.next()
+        cv.imwrite('{}/{}.jpg'.format(args.out_dir, i), canvas)
