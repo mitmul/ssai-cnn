@@ -1,7 +1,7 @@
 #! /bin/bash
 
-dname=MnihCNN_cis_2015-11-24_03-41-07
-epoch=7
+dname=MnihCNN_cis_2015-11-24_16-12-41
+epoch=1
 model=MnihCNN_cis
 python scripts/predict.py \
 --model results/${dname}/${model}.py \

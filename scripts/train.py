@@ -122,8 +122,8 @@ def create_minibatch(args, o_cur, l_cur, batch_queue):
 
         if ((not o_ret) and (not l_ret)):
             break
-
-    batch_queue.put(None)
+    logging.info('create_minibatch finished')
+    [batch_queue.put(None) for _ in six.moves.range(args.aug_threads)]
 
 
 def apply_transform(args, batch_queue, aug_queue):
@@ -173,7 +173,6 @@ def one_epoch(args, model, optimizer, epoch, train):
     n_iter = 0
     sum_loss = 0
     num = 0
-    st = time.time()
     while True:
         minibatch = aug_queue.get()
         if minibatch is None:
@@ -205,7 +204,7 @@ def one_epoch(args, model, optimizer, epoch, train):
     # wait for threads
     batch_worker.join()
     for w in aug_workers:
-        w.joint()
+        w.join()
 
     if train and (epoch == 1 or epoch % args.snapshot == 0):
         model_fn = '{}/epoch-{}.model'.format(args.result_dir, epoch)

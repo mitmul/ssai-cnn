@@ -44,3 +44,23 @@ nohup python scripts/train.py \
 --valid_ortho_db data/mass_merged/lmdb/valid_sat \
 --valid_label_db data/mass_merged/lmdb/valid_map \
 > mnih_merged_cis.log 2>&1 < /dev/null &
+
+nohup python scripts/train.py \
+--gpu 7 \
+--model models/VGG_multi.py \
+--train_ortho_db data/mass_merged/lmdb/train_sat \
+--train_label_db data/mass_merged/lmdb/train_map \
+--valid_ortho_db data/mass_merged/lmdb/valid_sat \
+--valid_label_db data/mass_merged/lmdb/valid_map \
+--opt MomentumSGD \
+> mnih_merged_vgg.log 2>&1 < /dev/null &
+
+nohup python scripts/train.py \
+--gpu 8 \
+--model models/VGG_cis.py \
+--train_ortho_db data/mass_merged/lmdb/train_sat \
+--train_label_db data/mass_merged/lmdb/train_map \
+--valid_ortho_db data/mass_merged/lmdb/valid_sat \
+--valid_label_db data/mass_merged/lmdb/valid_map \
+--opt MomentumSGD \
+> mnih_merged_vgg_cis.log 2>&1 < /dev/null &
