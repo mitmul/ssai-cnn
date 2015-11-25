@@ -34,6 +34,7 @@ nohup python scripts/train.py \
 --train_label_db data/mass_merged/lmdb/train_map \
 --valid_ortho_db data/mass_merged/lmdb/valid_sat \
 --valid_label_db data/mass_merged/lmdb/valid_map \
+--opt MomentumSGD \
 > mnih_merged.log 2>&1 < /dev/null &
 
 nohup python scripts/train.py \
