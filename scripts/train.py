@@ -207,7 +207,7 @@ def one_epoch(args, model, optimizer, epoch, train):
     batch_worker.join()
     logging.info('batch_worker terminated')
     for w in aug_workers:
-        w.join()
+        w.terminate()
         logging.info('aug_worker terminated')
 
     if train and (epoch == 1 or epoch % args.snapshot == 0):

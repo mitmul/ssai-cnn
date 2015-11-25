@@ -16,7 +16,8 @@ class MnihCNN_cis(Chain):
             conv1=L.Convolution2D(3, 64, 16, stride=4, pad=0),
             conv2=L.Convolution2D(64, 112, 4, stride=1, pad=0),
             conv3=L.Convolution2D(112, 80, 3, stride=1, pad=0),
-            fc4=L.Linear(5120, 768),
+            fc4=L.Linear(5120, 4096),
+            fc5=L.Linear(4096, 768),
         )
         self.train = True
         self.c = 0  # inhibit channel 0
@@ -25,7 +26,8 @@ class MnihCNN_cis(Chain):
         h = F.relu(self.conv1(x))
         h = F.relu(self.conv2(h))
         h = F.relu(self.conv3(h))
-        h = self.fc4(h)
+        h = F.relu(self.fc4(h))
+        h = F.relu(self.fc5(h))
         self.pred = F.reshape(h, (x.data.shape[0], 3, 16, 16))
 
         if t is not None:
