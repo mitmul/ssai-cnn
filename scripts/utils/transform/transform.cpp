@@ -1,7 +1,7 @@
 
 #include <vector>
 #include <string>
-#include <opencv.hpp>
+#include <opencv2/opencv.hpp>
 #include <boost/python.hpp>
 #include <boost/numpy.hpp>
 

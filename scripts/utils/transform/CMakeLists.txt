@@ -8,7 +8,6 @@ find_package(Boost COMPONENTS system filesystem python3 REQUIRED)
 find_package(PythonLibs REQUIRED)
 
 set(inc_dirs
-  /usr/local/include/opencv2
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${OpenCV_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
