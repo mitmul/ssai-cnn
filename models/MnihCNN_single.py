@@ -23,7 +23,7 @@ class MnihCNN_single(Chain):
         h = F.relu(self.conv2(h))
         h = F.relu(self.conv3(h))
         h = F.relu(self.fc4(h))
-        h = F.relu(self.fc5(h))
+        h = self.fc5(h)
         self.pred = F.reshape(h, (x.data.shape[0], 16, 16))
 
         if t is not None:

@@ -31,8 +31,8 @@ def get_args():
 def create_minibatch(args, ortho, queue):
     minibatch = []
     for d in range(0, args.map_size // 2, (args.map_size // 2) // args.offset):
-        for y in range(d, args.h_limit, args.map_size):
-            for x in range(d, args.w_limit, args.map_size):
+        for y in range(d, args.h_limit + args.map_size, args.map_size):
+            for x in range(d, args.w_limit + args.map_size, args.map_size):
                 if ((y + args.sat_size > args.h_limit)
                         or (x + args.sat_size > args.w_limit)):
                     break
@@ -54,16 +54,20 @@ def create_minibatch(args, ortho, queue):
 def tile_patches(args, canvas, queue):
     for d in range(0, args.map_size // 2, (args.map_size // 2) // args.offset):
         st = time.time()
-        for y in range(d, args.h_limit, args.map_size):
-            for x in range(d, args.w_limit, args.map_size):
+        for y in range(d, args.h_limit + args.map_size, args.map_size):
+            for x in range(d, args.w_limit + args.map_size, args.map_size):
                 if ((y + args.sat_size > args.h_limit)
                         or (x + args.sat_size > args.w_limit)):
                     break
                 pred = queue.get()
                 if pred is None:
                     break
-                pred = pred.transpose((1, 2, 0))
-                canvas[y:y + args.map_size, x:x + args.map_size, :] += pred
+                if pred.ndim == 3:
+                    pred = pred.transpose((1, 2, 0))
+                    canvas[y:y + args.map_size, x:x + args.map_size, :] += pred
+                else:
+                    canvas[y:y + args.map_size, x:x + args.map_size] += pred
+                    print(canvas[y:y + args.map_size, x:x + args.map_size])
         print('offset:{} ({} sec)'.format(d, time.time() - st))
 
 

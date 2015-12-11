@@ -10,6 +10,7 @@ import six
 import chainer
 from chainer import cuda
 from chainer import gradient_check
+from chainer.functions import Softmax
 from chainer import testing
 from chainer.testing import attr
 from chainer.testing import condition
@@ -20,10 +21,13 @@ class TestCIS(unittest.TestCase):
 
     def setUp(self):
         self.x = numpy.random.uniform(
-            -1, 1, (10, 3, 5, 5)).astype(numpy.float32)
+            -1, 1, (2, 3, 5, 5)).astype(numpy.float32)
         self.t = numpy.random.randint(
-            0, 3, (10, 5, 5,)).astype(numpy.int32)
+            0, 3, (2, 5, 5,)).astype(numpy.int32)
         self.c = 0
+        print(Softmax().forward((self.x,)))
+        print(self.x)
+        print(self.t)
 
     def check_forward(self, x_data, t_data, use_cudnn=True):
         x = chainer.Variable(x_data)

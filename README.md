@@ -21,6 +21,12 @@ $ bash $SSAI_HOME/shells/build_opencv.sh
 $ make -j32 install
 ```
 
+If some libraries are missing, do below before compiling 3.0.0.
+
+```
+$ sudo apt-get install -y libopencv-dev libtbb-dev
+```
+
 ## Boost 1.59. 0
 
 ```

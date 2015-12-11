@@ -69,7 +69,7 @@ class VGG_multi(Chain):
             self.loss /= 16 * 16
             return self.loss
         else:
-            self.pred = F.sigmoid(self.pred)
+            self.pred = F.softmax(self.pred)
             return self.pred
 
 model = VGG_multi()

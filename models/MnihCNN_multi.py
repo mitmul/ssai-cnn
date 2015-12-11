@@ -23,7 +23,7 @@ class MnihCNN_multi(Chain):
         h = F.relu(self.conv2(h))
         h = F.relu(self.conv3(h))
         h = F.relu(self.fc4(h))
-        h = F.relu(self.fc5(h))
+        h = self.fc5(h)
         self.pred = F.reshape(h, (x.data.shape[0], 3, 16, 16))
 
         if t is not None:
@@ -31,7 +31,7 @@ class MnihCNN_multi(Chain):
             self.loss /= 16 * 16
             return self.loss
         else:
-            self.pred = F.sigmoid(self.pred)
+            self.pred = F.softmax(self.pred)
             return self.pred
 
 model = MnihCNN_multi()
