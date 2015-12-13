@@ -102,8 +102,8 @@ def create_patches(sat_patch_size, map_patch_size, stride, map_ch,
 
     n_patches = 0
     for file_i, (sat_fn, map_fn) in enumerate(zip(sat_fns, map_fns)):
-        if ((os.path.basename(sat_fn).split('.')[0])
-                != (os.path.basename(map_fn).split('.')[0])):
+        if ((os.path.basename(sat_fn).split('.')[0]) !=
+                (os.path.basename(map_fn).split('.')[0])):
             print('File names are different', sat_fn, map_fn)
             return
 

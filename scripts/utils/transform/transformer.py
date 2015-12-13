@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+sys.path.insert(0, 'scripts/utils/transform/build')
 import time
 import numpy as np
 from transform import batch_transform
