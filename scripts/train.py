@@ -5,7 +5,7 @@ import sys
 import os
 sys.path.insert(0, 'scripts/utils')
 sys.path.insert(0, 'scripts/utils/transform')
-os.environ["CHAINER_TYPE_CHECK"] = "0"
+# os.environ["CHAINER_TYPE_CHECK"] = "0"
 
 import six
 import time

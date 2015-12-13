@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
-sys.path.insert(0, 'functions')
 import chainer.links as L
 import chainer.functions as F
 from chainer import Chain
-from cis import cis
-
+from chainer import cuda
+from chainer import Variable
 
 class MnihCNN_cis(Chain):
 
@@ -28,14 +26,40 @@ class MnihCNN_cis(Chain):
         h = F.relu(self.conv3(h))
         h = F.relu(self.fc4(h))
         h = self.fc5(h)
-        self.pred = F.reshape(h, (x.data.shape[0], 3, 16, 16))
+        h = F.reshape(h, (x.data.shape[0], 3, 16, 16))
+
+        # Channelwise Inhibited
+        h = F.split_axis(h, 3, 1)
+        c = F.reshape(h[self.c], (x.data.shape[0], 16, 16))
+        xp = cuda.get_array_module(x.data)
+        z = Variable(xp.zeros_like(c.data))
+        c = F.batch_matmul(c, z)
+        c = F.reshape(c, (x.data.shape[0], 1, 16, 16))
+        hs = []
+        for i, s in enumerate(h):
+            if i == self.c:
+                hs.append(c)
+            else:
+                hs.append(s)
+        self.pred = F.concat(hs, 1)
 
         if t is not None:
-            self.loss = cis(self.pred, t, self.c)
+            self.loss = F.softmax_cross_entropy(self.pred, t)
             self.loss /= 16 * 16
             return self.loss
         else:
             self.pred = F.softmax(self.pred)
             return self.pred
+
+    def middle_layers(self, x):
+        middles = []
+        middles.append((self.conv1.name, F.relu(self.conv1(x))))
+        middles.append((self.conv2.name, F.relu(self.conv2(middles[-1][-1]))))
+        middles.append((self.conv3.name, F.relu(self.conv3(middles[-1][-1]))))
+
+        h = F.relu(self.fc4(middles[-1][-1]))
+        h = self.fc5(h)
+        h = F.reshape(h, (x.data.shape[0], 3, 16, 16))
+        middles.append(('pred', h))
 
 model = MnihCNN_cis()

@@ -33,8 +33,8 @@ def create_minibatch(args, ortho, queue):
     for d in range(0, args.map_size // 2, (args.map_size // 2) // args.offset):
         for y in range(d, args.h_limit + args.map_size, args.map_size):
             for x in range(d, args.w_limit + args.map_size, args.map_size):
-                if ((y + args.sat_size > args.h_limit)
-                        or (x + args.sat_size > args.w_limit)):
+                if ((y + args.sat_size > args.h_limit) or
+                        (x + args.sat_size > args.w_limit)):
                     break
                 # ortho patch
                 o_patch = ortho[
@@ -56,8 +56,8 @@ def tile_patches(args, canvas, queue):
         st = time.time()
         for y in range(d, args.h_limit + args.map_size, args.map_size):
             for x in range(d, args.w_limit + args.map_size, args.map_size):
-                if ((y + args.sat_size > args.h_limit)
-                        or (x + args.sat_size > args.w_limit)):
+                if ((y + args.sat_size > args.h_limit) or
+                        (x + args.sat_size > args.w_limit)):
                     break
                 pred = queue.get()
                 if pred is None:

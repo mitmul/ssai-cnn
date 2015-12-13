@@ -34,4 +34,17 @@ class MnihCNN_multi(Chain):
             self.pred = F.softmax(self.pred)
             return self.pred
 
+    def middle_layers(self, x):
+        middles = []
+        middles.append((self.conv1.name, F.relu(self.conv1(x))))
+        middles.append((self.conv2.name, F.relu(self.conv2(middles[-1][-1]))))
+        middles.append((self.conv3.name, F.relu(self.conv3(middles[-1][-1]))))
+
+        h = F.relu(self.fc4(middles[-1][-1]))
+        h = self.fc5(h)
+        h = F.reshape(h, (x.data.shape[0], 3, 16, 16))
+        middles.append(('pred', h))
+
+        return middles
+
 model = MnihCNN_multi()
