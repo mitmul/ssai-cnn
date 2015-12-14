@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import imp
 import glob
 import time
@@ -33,8 +34,8 @@ def create_minibatch(args, ortho, queue):
     for d in range(0, args.map_size // 2, (args.map_size // 2) // args.offset):
         for y in range(d, args.h_limit + args.map_size, args.map_size):
             for x in range(d, args.w_limit + args.map_size, args.map_size):
-                if ((y + args.sat_size > args.h_limit) or
-                        (x + args.sat_size > args.w_limit)):
+                if (((y + args.sat_size) > args.h_limit) or
+                        ((x + args.sat_size) > args.w_limit)):
                     break
                 # ortho patch
                 o_patch = ortho[
@@ -56,8 +57,8 @@ def tile_patches(args, canvas, queue):
         st = time.time()
         for y in range(d, args.h_limit + args.map_size, args.map_size):
             for x in range(d, args.w_limit + args.map_size, args.map_size):
-                if ((y + args.sat_size > args.h_limit) or
-                        (x + args.sat_size > args.w_limit)):
+                if (((y + args.sat_size) > args.h_limit) or
+                        ((x + args.sat_size) > args.w_limit)):
                     break
                 pred = queue.get()
                 if pred is None:
@@ -125,7 +126,8 @@ if __name__ == '__main__':
         model.to_gpu()
     model.train = False
 
-    out_dir = '{}/test'.format(os.path.dirname(args.model))
+    epoch = re.search('epoch-([0-9]+)', args.param).groups()[0]
+    out_dir = '{}/prediction_{}'.format(os.path.dirname(args.model), epoch)
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
     for fn in glob.glob('{}/*.tif*'.format(args.test_sat_dir)):

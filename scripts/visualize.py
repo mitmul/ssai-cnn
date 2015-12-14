@@ -54,11 +54,11 @@ def tile_middle(middle, pad=1):
     canvas = np.ones((n_side * h + (n_side + 1) * pad,
                       n_side * w + (n_side + 1) * pad),
                      dtype=np.uint8) * 125
-    middle -= middle.min()
-    middle /= middle.max()
-    middle = (middle * 255).astype(np.uint8)
     for i in range(n_patch):
         patch = middle[i]
+        patch -= patch.min()
+        patch /= patch.max()
+        patch = (patch * 255).astype(np.uint8)
         y = i // n_side
         y = pad * (y + 1) + y * h
         x = i % n_side

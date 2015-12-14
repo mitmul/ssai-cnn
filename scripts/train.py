@@ -243,10 +243,10 @@ if __name__ == '__main__':
         # learning rate reduction
         if args.opt == 'MomentumSGD' and epoch % args.lr_decay_freq == 0:
             optimizer.lr *= args.lr_decay_ratio
-            logging.info('learning rate:', optimizer.lr)
+            logging.info('learning rate:{}'.format(optimizer.lr))
 
         one_epoch(args, model, optimizer, epoch, True)
-        one_epoch(args, model, optimizer, epoch, False)
+        # one_epoch(args, model, optimizer, epoch, False)
 
         # draw curve
         draw_loss('{}/log.txt'.format(args.result_dir),

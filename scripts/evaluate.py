@@ -4,8 +4,9 @@
 import sys
 sys.path.insert(0, 'scripts/utils')
 
-import matplotlib
-matplotlib.use('Agg')
+if 'linux' in sys.platform:
+    import matplotlib
+    matplotlib.use('Agg')
 
 import re
 import glob
@@ -127,11 +128,11 @@ def worker_thread(result_fn_queue):
                 threshold = 1.0 / steps * t
 
                 pred_vals = np.array(
-                    pred[:, :, c] >= threshold, dtype=np.int32)
+                    pred[:, :, c] >= threshold, dtype=np.uint8)
 
-                label_vals = np.array(label, dtype=np.int32)
+                label_vals = np.array(label, dtype=np.uint8)
                 if ch > 1:
-                    label_vals = np.array(label == c, dtype=np.int32)
+                    label_vals = np.array(label == c, dtype=np.uint8)
 
                 all_positive[i, c, t] = np.sum(pred_vals)
                 all_prec_tp[i, c, t] = relax_precision(
@@ -140,6 +141,10 @@ def worker_thread(result_fn_queue):
                 all_true[i, c, t] = np.sum(label_vals)
                 all_recall_tp[i, c, t] = relax_recall(
                     pred_vals, label_vals, relax)
+
+                pre = all_positive[i, c, t] / all_prec_tp[i, c, t]
+                rec = all_recall_tp[i, c, t] / all_true[i, c, t]
+                print(pre, rec)
 
             pre_rec, breakeven_pt = get_pre_rec(
                 all_positive[i, c], all_prec_tp[i, c],
@@ -158,10 +163,12 @@ if __name__ == '__main__':
     result_fn_queue = Queue()
     workers = [Process(target=worker_thread,
                        args=(result_fn_queue,)) for i in range(n_thread)]
-    map(lambda w: w.start(), workers)
+    for w in workers:
+        w.start()
     [result_fn_queue.put((i, fn)) for i, fn in enumerate(result_fns)]
     [result_fn_queue.put((None, None)) for _ in range(n_thread)]
-    map(lambda w: w.join(), workers)
+    for w in workers:
+        w.join()
     print('all finished')
 
     all_positive = np.sum(all_positive, axis=0)

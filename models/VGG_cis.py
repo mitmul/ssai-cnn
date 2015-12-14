@@ -69,7 +69,8 @@ class VGG_cis(Chain):
         h = F.split_axis(h, 3, 1)
         c = F.reshape(h[self.c], (x.data.shape[0], 16, 16))
         xp = cuda.get_array_module(x.data)
-        z = Variable(xp.zeros_like(c.data))
+        volatile = False if t is not None else True
+        z = Variable(xp.zeros_like(c.data), volatile=volatile)
         c = F.batch_matmul(c, z)
         c = F.reshape(c, (x.data.shape[0], 1, 16, 16))
         hs = []

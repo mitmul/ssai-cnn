@@ -39,22 +39,28 @@ def draw_loss(logfile, outfile, draw_iters=False):
                 valid_epoch_loss.append([epoch, te_l])
 
     train_iter_loss = np.asarray(train_iter_loss)
-    train_iter_loss[:, 1] /= float(np.max(train_iter_loss[:, 1]))
-    train_iter_loss[:, 1] += train_iter_loss[:, 0] - 1
+    if len(train_iter_loss) > 0:
+        train_iter_loss[:, 1] /= float(np.max(train_iter_loss[:, 1]))
+        train_iter_loss[:, 1] += train_iter_loss[:, 0] - 1
     train_epoch_loss = np.asarray(train_epoch_loss)
     valid_iter_loss = np.asarray(valid_iter_loss)
-    valid_iter_loss[:, 1] /= float(np.max(valid_iter_loss[:, 1]))
-    valid_iter_loss[:, 1] += valid_iter_loss[:, 0] - 1
+    if len(valid_iter_loss) > 0:
+        valid_iter_loss[:, 1] /= float(np.max(valid_iter_loss[:, 1]))
+        valid_iter_loss[:, 1] += valid_iter_loss[:, 0] - 1
     valid_epoch_loss = np.asarray(valid_epoch_loss)
 
     plt.clf()
     if draw_iters == 1:
-        plt.plot(train_iter_loss[:, 1], train_iter_loss[:, 2])
-        plt.plot(valid_iter_loss[:, 1], valid_iter_loss[:, 2])
-    plt.plot(train_epoch_loss[:, 0], train_epoch_loss[:, 1], c='b',
-             label='training loss', marker='x')
-    plt.plot(valid_epoch_loss[:, 0], valid_epoch_loss[:, 1], c='g',
-             label='validation loss', marker='x')
+        if len(train_iter_loss) > 0:
+            plt.plot(train_iter_loss[:, 1], train_iter_loss[:, 2])
+        if len(valid_iter_loss) > 0:
+            plt.plot(valid_iter_loss[:, 1], valid_iter_loss[:, 2])
+    if len(train_iter_loss) > 0:
+        plt.plot(train_epoch_loss[:, 0], train_epoch_loss[:, 1], c='b',
+                 label='training loss', marker='x')
+    if len(valid_iter_loss) > 0:
+        plt.plot(valid_epoch_loss[:, 0], valid_epoch_loss[:, 1], c='g',
+                 label='validation loss', marker='x')
     plt.xlabel('epoch')
     plt.ylabel('loss')
 
