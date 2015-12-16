@@ -1,8 +1,8 @@
 #! /bin/bash
 
-dname=MnihCNN_cis_2015-12-14_01-30-46
-epoch=75
-model=MnihCNN_cis
+dname=MnihCNN_multi_2015-12-14_01-30-46
+epoch=204
+model=MnihCNN_multi
 dataset=merged
 channels=3
 

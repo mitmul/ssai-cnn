@@ -5,8 +5,9 @@ import sys
 import os
 sys.path.insert(0, 'scripts/utils')
 sys.path.insert(0, 'scripts/utils/transform')
-# os.environ["CHAINER_TYPE_CHECK"] = "0"
+os.environ["CHAINER_TYPE_CHECK"] = "0"
 
+import re
 import six
 import time
 import imp
@@ -32,7 +33,7 @@ def create_result_dir(args):
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
     else:
-        result_dir = os.path.dirname(args.resume)
+        result_dir = os.path.dirname(args.resume_model)
 
     log_fn = '%s/log.txt' % result_dir
     logging.basicConfig(
@@ -56,6 +57,10 @@ def get_model_optimizer(args):
         if not os.path.exists(dst):
             shutil.copy(__file__, dst)
 
+    # load model
+    if args.resume_model is not None:
+        serializers.load_hdf5(args.resume_model, model)
+
     # prepare model
     if args.gpu >= 0:
         model.to_gpu()
@@ -77,6 +82,11 @@ def get_model_optimizer(args):
             optimizer.add_hook(
                 chainer.optimizer.WeightDecay(args.weight_decay))
 
+        if args.resume_opt is not None:
+            serializers.load_hdf5(args.resume_opt, optimizer)
+            args.epoch_offset = int(
+                re.search('epoch-([0-9]+)', args.resume_opt).groups()[0])
+
         return model, optimizer
     else:
         print('No optimizer generated.')
@@ -84,6 +94,7 @@ def get_model_optimizer(args):
 
 
 def create_minibatch(args, o_cur, l_cur, batch_queue):
+    np.random.seed(int(time.time()))
     skip = np.random.randint(args.batchsize)
     for _ in six.moves.range(skip):
         o_cur.next()
@@ -129,6 +140,7 @@ def create_minibatch(args, o_cur, l_cur, batch_queue):
 
 
 def apply_transform(args, batch_queue, aug_queue):
+    np.random.seed(int(time.time()))
     while True:
         augs = batch_queue.get()
         if augs is None:
@@ -239,12 +251,13 @@ if __name__ == '__main__':
 
     # start logging
     logging.info('start training...')
-    for epoch in six.moves.range(1, args.epoch + 1):
+    for epoch in six.moves.range(args.epoch_offset + 1, args.epoch + 1):
         # learning rate reduction
         if args.opt == 'MomentumSGD' and epoch % args.lr_decay_freq == 0:
-            optimizer.lr *= args.lr_decay_ratio
-            logging.info('learning rate:{}'.format(optimizer.lr))
+            if epoch <= 200:
+                optimizer.lr *= args.lr_decay_ratio
 
+        logging.info('learning rate:{}'.format(optimizer.lr))
         one_epoch(args, model, optimizer, epoch, True)
         # one_epoch(args, model, optimizer, epoch, False)
 

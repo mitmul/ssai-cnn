@@ -17,6 +17,7 @@ def create_args():
     parser.add_argument('--snapshot', type=int, default=1)
     parser.add_argument('--resume_model', type=str, default=None)
     parser.add_argument('--resume_opt', type=str, default=None)
+    parser.add_argument('--epoch_offset', type=int, default=0)
 
     # Dataset paths
     parser.add_argument('--train_ortho_db', type=str,
