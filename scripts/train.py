@@ -6,6 +6,7 @@ import os
 sys.path.insert(0, 'scripts/utils')
 sys.path.insert(0, 'scripts/utils/transform')
 os.environ["CHAINER_TYPE_CHECK"] = "0"
+os.environ["CHAINER_SEED"] = "1701"
 
 import re
 import six
@@ -44,7 +45,7 @@ def create_result_dir(args):
     return log_fn, result_dir
 
 
-def get_model_optimizer(args):
+def get_model(args):
     model_fn = os.path.basename(args.model)
     model = imp.load_source(model_fn.split('.')[0], args.model).model
 
@@ -64,6 +65,12 @@ def get_model_optimizer(args):
     # prepare model
     if args.gpu >= 0:
         model.to_gpu()
+
+    return model
+
+
+def get_model_optimizer(args):
+    model = get_model(args)
 
     if 'opt' in args:
         # prepare optimizer
@@ -180,7 +187,7 @@ def one_epoch(args, model, optimizer, epoch, train):
     aug_queue = Queue()
     aug_workers = [Process(target=apply_transform,
                            args=(args, batch_queue, aug_queue))
-                   for _ in range(args.aug_threads)]
+                   for __ in range(args.aug_threads)]
     for w in aug_workers:
         w.start()
 
@@ -235,6 +242,7 @@ def one_epoch(args, model, optimizer, epoch, train):
         logging.info(
             'epoch:{}\tvalidate loss:{}'.format(epoch, sum_loss / num))
 
+    return model, optimizer
 
 if __name__ == '__main__':
     args = create_args()
@@ -254,11 +262,10 @@ if __name__ == '__main__':
     for epoch in six.moves.range(args.epoch_offset + 1, args.epoch + 1):
         # learning rate reduction
         if args.opt == 'MomentumSGD' and epoch % args.lr_decay_freq == 0:
-            if epoch <= 200:
-                optimizer.lr *= args.lr_decay_ratio
+            optimizer.lr *= args.lr_decay_ratio
 
         logging.info('learning rate:{}'.format(optimizer.lr))
-        one_epoch(args, model, optimizer, epoch, True)
+        model, optimizer = one_epoch(args, model, optimizer, epoch, True)
         # one_epoch(args, model, optimizer, epoch, False)
 
         # draw curve
