@@ -9,7 +9,7 @@ def create_args():
 
     # Training settings
     parser.add_argument('--model', type=str,
-                        default='models/MnihCNN_single.py')
+                        default='models/MnihCNN_multi.py')
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--epoch', type=int, default=10000)
     parser.add_argument('--batchsize', type=int, default=128)
@@ -21,13 +21,13 @@ def create_args():
 
     # Dataset paths
     parser.add_argument('--train_ortho_db', type=str,
-                        default='data/mass_buildings/lmdb/train_sat')
+                        default='data/mass_merged/lmdb/train_sat')
     parser.add_argument('--train_label_db', type=str,
-                        default='data/mass_buildings/lmdb/train_map')
+                        default='data/mass_merged/lmdb/train_map')
     parser.add_argument('--valid_ortho_db', type=str,
-                        default='data/mass_buildings/lmdb/valid_sat')
+                        default='data/mass_merged/lmdb/valid_sat')
     parser.add_argument('--valid_label_db', type=str,
-                        default='data/mass_buildings/lmdb/valid_map')
+                        default='data/mass_merged/lmdb/valid_map')
 
     # Dataset info
     parser.add_argument('--ortho_original_side', type=int, default=92)

@@ -50,7 +50,6 @@ class MnihCNN_cis(Chain):
 
         if self.train:
             self.loss = F.softmax_cross_entropy(h, t, normalize=False)
-            # self.loss /= 16 * 16
             return self.loss
         else:
             self.pred = F.softmax(h)

@@ -25,14 +25,13 @@ class MnihCNN_multi(Chain):
         h = F.relu(self.conv3(h))
         h = F.relu(self.fc4(h))
         h = self.fc5(h)
-        self.pred = F.reshape(h, (x.data.shape[0], 3, 16, 16))
+        h = F.reshape(h, (x.data.shape[0], 3, 16, 16))
 
         if t is not None:
-            self.loss = F.softmax_cross_entropy(self.pred, t, normalize=False)
-            # self.loss /= 16 * 16
+            self.loss = F.softmax_cross_entropy(h, t, normalize=False)
             return self.loss
         else:
-            self.pred = F.softmax(self.pred)
+            self.pred = F.softmax(h)
             return self.pred
 
     def middle_layers(self, x):
