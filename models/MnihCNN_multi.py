@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from chainer import Chain
+import chainer
 import chainer.links as L
 import chainer.functions as F
 
 
-class MnihCNN_multi(Chain):
+class MnihCNN_multi(chainer.Chain):
 
     def __init__(self):
         super(MnihCNN_multi, self).__init__(

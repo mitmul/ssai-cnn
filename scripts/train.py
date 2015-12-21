@@ -6,7 +6,6 @@ import os
 sys.path.insert(0, 'scripts/utils')
 sys.path.insert(0, 'scripts/utils/transform')
 os.environ["CHAINER_TYPE_CHECK"] = "0"
-os.environ["CHAINER_SEED"] = "1701"
 
 import re
 import six
@@ -250,6 +249,7 @@ if __name__ == '__main__':
         cuda.get_device(args.gpu).use()
     xp = cuda.cupy if args.gpu >= 0 else np
     xp.random.seed(args.seed)
+    np.random.seed(args.seed)
 
     # create result dir
     log_fn, args.result_dir = create_result_dir(args)

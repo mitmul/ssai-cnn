@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import chainer
 import chainer.links as L
 import chainer.functions as F
-from chainer import Chain
 from chainer import cuda
 from chainer import Variable
 
 
-class MnihCNN_cis(Chain):
+class MnihCNN_cis(chainer.Chain):
 
     def __init__(self):
         super(MnihCNN_cis, self).__init__(
