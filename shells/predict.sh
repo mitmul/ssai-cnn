@@ -1,11 +1,11 @@
 #! /bin/bash
 
-dname=MnihCNN_multi_2015-12-18_15-06-40
-epoch=120
-model=MnihCNN_multi
+dname=MnihCNN_cis_2015-12-19_05-11-12
+epoch=200
+model=MnihCNN_cis
 dataset=merged
 channels=3
-gpu=2
+gpu=5
 
 python scripts/predict.py \
 --model results/${dname}/${model}.py \

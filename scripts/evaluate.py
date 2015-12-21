@@ -142,10 +142,6 @@ def worker_thread(result_fn_queue):
                 all_recall_tp[i, c, t] = relax_recall(
                     pred_vals, label_vals, relax)
 
-                pre = all_positive[i, c, t] / all_prec_tp[i, c, t]
-                rec = all_recall_tp[i, c, t] / all_true[i, c, t]
-                print(pre, rec)
-
             pre_rec, breakeven_pt = get_pre_rec(
                 all_positive[i, c], all_prec_tp[i, c],
                 all_true[i, c], all_recall_tp[i, c], steps)

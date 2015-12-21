@@ -34,6 +34,9 @@ nohup python scripts/train.py \
 --train_label_db data/mass_merged/lmdb/train_map \
 --valid_ortho_db data/mass_merged/lmdb/valid_sat \
 --valid_label_db data/mass_merged/lmdb/valid_map \
+--resume_model results/MnihCNN_multi_2015-12-19_05-11-12/epoch-199.model \
+--resume_opt results/MnihCNN_multi_2015-12-19_05-11-12/epoch-199.state \
+--epoch_offset 199 \
 > mnih_merged.log 2>&1 < /dev/null &
 
 nohup python scripts/train.py \
@@ -43,6 +46,9 @@ nohup python scripts/train.py \
 --train_label_db data/mass_merged/lmdb/train_map \
 --valid_ortho_db data/mass_merged/lmdb/valid_sat \
 --valid_label_db data/mass_merged/lmdb/valid_map \
+--resume_model results/MnihCNN_cis_2015-12-19_05-11-12/epoch-199.model \
+--resume_opt results/MnihCNN_cis_2015-12-19_05-11-12/epoch-199.state \
+--epoch_offset 199 \
 > mnih_merged_cis.log 2>&1 < /dev/null &
 
 # nohup python scripts/train.py \

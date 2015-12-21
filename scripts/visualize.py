@@ -128,7 +128,7 @@ if __name__ == '__main__':
             o_patch -= o_patch.reshape((3, -1)).mean(axis=1)
             o_patch /= o_patch.reshape((3, -1)).std(axis=1)
             o_patch = np.expand_dims(o_patch.transpose((2, 0, 1)), axis=0)
-            middles = model.middle_layers(Variable(o_patch))
+            middles = model.middle_layers(Variable(o_patch, volatile=True))
 
             for name, middle in middles:
                 middle = middle.data[0]
