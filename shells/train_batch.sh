@@ -32,12 +32,12 @@ function train() {
     CHAINER_SEED=$1 nohup python scripts/train.py \
     --seed $1 \
     --gpu $1 \
-    --model models/MnihCNN_multi.py \
+    --model models/MnihCNN_cis.py \
     --train_ortho_db data/mass_merged/lmdb/train_sat \
     --train_label_db data/mass_merged/lmdb/train_map \
     --valid_ortho_db data/mass_merged/lmdb/valid_sat \
     --valid_label_db data/mass_merged/lmdb/valid_map \
-    > mnih_merged.log 2>&1 < /dev/null &
+    > mnih_cis.log 2>&1 < /dev/null &
 }
 
 train 0

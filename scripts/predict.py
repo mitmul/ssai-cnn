@@ -22,7 +22,7 @@ def get_args():
     parser.add_argument('--test_sat_dir', type=str)
     parser.add_argument('--sat_size', type=int, default=64)
     parser.add_argument('--map_size', type=int, default=16)
-    parser.add_argument('--channels', type=int, default=1)
+    parser.add_argument('--channels', type=int, default=3)
     parser.add_argument('--offset', type=int, default=1)
     parser.add_argument('--batchsize', type=int, default=128)
 
@@ -32,8 +32,8 @@ def get_args():
 def create_minibatch(args, ortho, queue):
     minibatch = []
     for d in range(0, args.map_size // 2, (args.map_size // 2) // args.offset):
-        for y in range(d, args.h_limit + args.map_size, args.map_size):
-            for x in range(d, args.w_limit + args.map_size, args.map_size):
+        for y in range(d, args.h_limit, args.map_size):
+            for x in range(d, args.w_limit, args.map_size):
                 if (((y + args.sat_size) > args.h_limit) or
                         ((x + args.sat_size) > args.w_limit)):
                     break
@@ -55,8 +55,8 @@ def create_minibatch(args, ortho, queue):
 def tile_patches(args, canvas, queue):
     for d in range(0, args.map_size // 2, (args.map_size // 2) // args.offset):
         st = time.time()
-        for y in range(d, args.h_limit + args.map_size, args.map_size):
-            for x in range(d, args.w_limit + args.map_size, args.map_size):
+        for y in range(d, args.h_limit, args.map_size):
+            for x in range(d, args.w_limit, args.map_size):
                 if (((y + args.sat_size) > args.h_limit) or
                         ((x + args.sat_size) > args.w_limit)):
                     break

@@ -36,17 +36,24 @@ class MnihCNN_multi(chainer.Chain):
 
     def middle_layers(self, x):
         middles = []
-        middles.append((self.conv1.name, F.relu(self.conv1(x))))
-        h = F.max_pooling_2d(middles[-1][-1], 2, 1)
-        middles.append((self.conv2.name, F.relu(self.conv2(h))))
-        middles.append((self.conv3.name, F.relu(self.conv3(middles[-1][-1]))))
+        h = self.conv1(x)
+        middles.append((self.conv1.name, h))
+        h = F.relu(h)
+        h = F.max_pooling_2d(h, 2, 1)
+        h = self.conv2(h)
+        middles.append((self.conv2.name, h))
+        h = F.relu(h)
+        h = self.conv3(h)
+        middles.append((self.conv3.name, h))
+        h = F.relu(h)
 
-        h = F.relu(self.fc4(middles[-1][-1]))
+        h = F.relu(self.fc4(h))
         h = self.fc5(h)
         h = F.reshape(h, (x.data.shape[0], 3, 16, 16))
         middles.append(('reshape', h))
-        h = F.softmax(h)
-        middles.append(('pred', h))
+
+        self.pred = F.softmax(h)
+        middles.append(('pred', self.pred))
 
         return middles
 
