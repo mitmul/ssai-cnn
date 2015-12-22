@@ -1,13 +1,11 @@
 #! /bin/bash
 
-# dname=MnihCNN_cis_2015-12-19_05-11-12
-# epoch=200
-# model=MnihCNN_cis
-dname=MnihCNN_multi_2015-12-19_05-11-12
-epoch=200
-model=MnihCNN_multi
+function visualize() {
+    python scripts/visualize.py \
+    --model results/$1/$2.py \
+    --param results/$1/epoch-$3.model \
+    --out_dir results/$1/mid-$3
+}
 
-python scripts/visualize.py \
---model results/${dname}/${model}.py \
---param results/${dname}/epoch-${epoch}.model \
---out_dir results/${dname}/weights-${epoch}
+visualize MnihCNN_cis_2015-12-19_05-11-12 MnihCNN_cis 200
+visualize MnihCNN_multi_2015-12-19_05-11-12 MnihCNN_multi 200

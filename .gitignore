@@ -9,6 +9,7 @@ results
 *__pycache__*
 *CMakeFiles*
 *Makefile*
+*prediction_*
 
 *.tif
 *.tiff

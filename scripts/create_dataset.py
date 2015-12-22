@@ -46,7 +46,7 @@ def create_merged_map():
             merged_map = np.zeros((h, w))
             merged_map += building_map
             merged_map += road_map * 2
-            merged_map = np.where(merged_map > 2, 0, merged_map)
+            merged_map = np.where(merged_map > 2, 2, merged_map)
             cv.imwrite('data/mass_merged/%s/map/%s.tif' % (data_type, base),
                        merged_map)
             print(merged_map.shape, fn)

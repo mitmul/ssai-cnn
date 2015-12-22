@@ -30,8 +30,8 @@ def get_args():
 
 
 def create_minibatch(args, ortho, queue):
-    minibatch = []
-    for d in range(0, args.map_size // 2, (args.map_size // 2) // args.offset):
+    for d in range(0, args.offset, 1):
+        minibatch = []
         for y in range(d, args.h_limit, args.map_size):
             for x in range(d, args.w_limit, args.map_size):
                 if (((y + args.sat_size) > args.h_limit) or
@@ -49,11 +49,12 @@ def create_minibatch(args, ortho, queue):
                 if len(minibatch) == args.batchsize:
                     queue.put(np.asarray(minibatch, dtype=np.float32))
                     minibatch = []
+        queue.put(np.asarray(minibatch, dtype=np.float32))
     queue.put(None)
 
 
 def tile_patches(args, canvas, queue):
-    for d in range(0, args.map_size // 2, (args.map_size // 2) // args.offset):
+    for d in range(0, args.offset, 1):
         st = time.time()
         for y in range(d, args.h_limit, args.map_size):
             for x in range(d, args.w_limit, args.map_size):
@@ -75,8 +76,10 @@ def tile_patches(args, canvas, queue):
 def get_predict(args, ortho, model):
     xp = cuda.cupy if args.gpu >= 0 else np
     args.h_limit, args.w_limit = ortho.shape[0], ortho.shape[1]
-    args.canvas_h = args.h_limit - (args.sat_size - args.map_size)
-    args.canvas_w = args.w_limit - (args.sat_size - args.map_size)
+    h_num = int(np.floor(args.h_limit / args.map_size))
+    w_num = int(np.floor(args.w_limit / args.map_size))
+    args.canvas_h = h_num * args.map_size - (args.sat_size - args.map_size)
+    args.canvas_w = w_num * args.map_size - (args.sat_size - args.map_size)
 
     # to share 'canvas' between different threads
     canvas_ = Array(
@@ -85,7 +88,7 @@ def get_predict(args, ortho, model):
     canvas = canvas.reshape((args.canvas_h, args.canvas_w, args.channels))
 
     # prepare queues and threads
-    patch_queue = Queue(maxsize=1)
+    patch_queue = Queue(maxsize=5)
     preds_queue = Queue()
     patch_worker = Process(
         target=create_minibatch, args=(args, ortho, patch_queue))
