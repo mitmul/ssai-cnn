@@ -57,12 +57,8 @@ $ python setup.py build_ext -i
 
 ```
 $ cd $SSAI_HOME/scripts/utils/transform
-$ cmake \
--DPYTHON_LIBRARY=$HOME/anaconda3/lib/libpython3.5m.so \
--DPYTHON_INCLUDE_DIR=$HOME/anaconda3/include/python3.5m \
--DPYTHON_INCLUDE_DIR2=$HOME/anaconda3/include \
--DOpenCV_DIR=/usr/local/share/OpenCV \
-. && make
+$ mkdir build && cd build
+$ bash ../build.sh
 ```
 
 On OSX:
@@ -77,6 +73,14 @@ cmake \
 -DOpenCV_DIR=/opt/local/share/OpenCV \
 -Wno-dev \
 ../
+```
+
+## evaluation tools
+
+```
+$ cd $SSAI_HOME/scripts/utils/evaluation
+$ mkdir build && cd build
+$ bash ../build.sh
 ```
 
 # Create Dataset

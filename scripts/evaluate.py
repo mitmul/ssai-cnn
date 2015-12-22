@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-sys.path.insert(0, 'scripts/utils')
+sys.path.insert(0, 'scripts/utils/evaluation/build')
 
 if 'linux' in sys.platform:
     import matplotlib
@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 from os.path import basename
 from os.path import exists
 from multiprocessing import Queue, Process, Array
-from calc_relax_pr import relax_precision, relax_recall
+from evaluation import relax_precision, relax_recall
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--map_dir', '-i', type=str)
@@ -117,8 +117,10 @@ def worker_thread(result_fn_queue):
         label = cv.imread('%s/%s.tif' %
                           (label_dir, img_id), cv.IMREAD_GRAYSCALE)
         pred = np.load(result_fn)
-        label = label[pad + args.offset:pad + args.offset + pred.shape[0],
-                      pad + args.offset:pad + args.offset + pred.shape[1]]
+        label = label[pad + args.offset - 1:
+                      pad + args.offset - 1 + pred.shape[0],
+                      pad + args.offset - 1:
+                      pad + args.offset - 1 + pred.shape[1]]
         cv.imwrite('%s/label_%s.png' % (out_dir, img_id), label * 125)
 
         print('pred_shape:', pred.shape)
@@ -128,11 +130,11 @@ def worker_thread(result_fn_queue):
                 threshold = 1.0 / steps * t
 
                 pred_vals = np.array(
-                    pred[:, :, c] >= threshold, dtype=np.uint8)
+                    pred[:, :, c] >= threshold, dtype=np.int32)
 
-                label_vals = np.array(label, dtype=np.uint8)
+                label_vals = np.array(label, dtype=np.int32)
                 if ch > 1:
-                    label_vals = np.array(label == c, dtype=np.uint8)
+                    label_vals = np.array(label == c, dtype=np.int32)
 
                 all_positive[i, c, t] = np.sum(pred_vals)
                 all_prec_tp[i, c, t] = relax_precision(

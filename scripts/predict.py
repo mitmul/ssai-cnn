@@ -30,7 +30,7 @@ def get_args():
 
 
 def create_minibatch(args, ortho, queue):
-    for d in range(0, args.offset, 1):
+    for d in range(0, args.map_size // 2, (args.map_size // 2) // args.offset):
         minibatch = []
         for y in range(d, args.h_limit, args.map_size):
             for x in range(d, args.w_limit, args.map_size):
@@ -54,7 +54,7 @@ def create_minibatch(args, ortho, queue):
 
 
 def tile_patches(args, canvas, queue):
-    for d in range(0, args.offset, 1):
+    for d in range(0, args.map_size // 2, (args.map_size // 2) // args.offset):
         st = time.time()
         for y in range(d, args.h_limit, args.map_size):
             for x in range(d, args.w_limit, args.map_size):
@@ -78,8 +78,10 @@ def get_predict(args, ortho, model):
     args.h_limit, args.w_limit = ortho.shape[0], ortho.shape[1]
     h_num = int(np.floor(args.h_limit / args.map_size))
     w_num = int(np.floor(args.w_limit / args.map_size))
-    args.canvas_h = h_num * args.map_size - (args.sat_size - args.map_size)
-    args.canvas_w = w_num * args.map_size - (args.sat_size - args.map_size)
+    args.canvas_h = h_num * args.map_size - \
+        (args.sat_size - args.map_size) + args.offset - 1
+    args.canvas_w = w_num * args.map_size - \
+        (args.sat_size - args.map_size) + args.offset - 1
 
     # to share 'canvas' between different threads
     canvas_ = Array(
@@ -112,8 +114,8 @@ def get_predict(args, ortho, model):
     patch_worker.join()
     canvas_worker.join()
 
-    canvas = canvas[args.offset - 1: args.canvas_h - (args.offset - 1),
-                    args.offset - 1: args.canvas_w - (args.offset - 1)]
+    canvas = canvas[args.offset - 1:args.canvas_h - (args.offset - 1),
+                    args.offset - 1:args.canvas_w - (args.offset - 1)]
     canvas /= args.offset
 
     return canvas

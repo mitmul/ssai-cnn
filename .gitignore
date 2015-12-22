@@ -1,7 +1,6 @@
 .DS_Store
 .remote-sync.json
 *CMakeCache.txt*
-scripts/utils/transform/build.sh
 
 data
 results
