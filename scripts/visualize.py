@@ -15,7 +15,7 @@ def get_args():
     parser.add_argument('--model', type=str)
     parser.add_argument('--param', type=str)
     parser.add_argument('--out_dir', type=str)
-    parser.add_argument('--num', type=int, default=10)
+    parser.add_argument('--num', type=int, default=100)
     parser.add_argument('--ortho_original_side', type=int, default=92)
     parser.add_argument('--label_original_side', type=int, default=24)
     parser.add_argument('--ortho_side', type=int, default=64)
@@ -54,11 +54,14 @@ def tile_middle(middle, pad=1):
     canvas = np.ones((n_side * h + (n_side + 1) * pad,
                       n_side * w + (n_side + 1) * pad),
                      dtype=np.uint8) * 125
+    middle -= middle.min()
+    middle /= middle.max()
+    middle = (middle * 255).astype(np.uint8)
     for i in range(n_patch):
         patch = middle[i]
-        patch -= patch.min()
-        patch /= patch.max()
-        patch = (patch * 255).astype(np.uint8)
+        # patch -= patch.min()
+        # patch /= patch.max()
+        # patch = (patch * 255).astype(np.uint8)
         y = i // n_side
         y = pad * (y + 1) + y * h
         x = i % n_side
