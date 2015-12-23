@@ -14,9 +14,8 @@ epoch=150
 model=MnihCNN_multi
 dataset=merged
 channels=3
-gpu=5
 
-# predict MnihCNN_multi_2015-12-21_10-45-53 $epoch $model $dataset $channels 0
+predict MnihCNN_multi_2015-12-21_10-45-53 $epoch $model $dataset $channels 0
 predict MnihCNN_multi_2015-12-21_10-45-53_10 $epoch $model $dataset $channels 2
 predict MnihCNN_multi_2015-12-21_10-45-53_40 $epoch $model $dataset $channels 3
 predict MnihCNN_multi_2015-12-21_10-45-53_44 $epoch $model $dataset $channels 4

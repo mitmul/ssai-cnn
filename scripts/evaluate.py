@@ -23,19 +23,16 @@ from multiprocessing import Queue, Process, Array
 from evaluation import relax_precision, relax_recall
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--map_dir', '-i', type=str)
-parser.add_argument('--result_dir', '-d', type=str)
-parser.add_argument('--channel', '-c', type=int, default=3)
-parser.add_argument('--offset', '-o', type=int, default=0)
-parser.add_argument('--pad', '-p', type=int, default=24)  # (64 / 2) - (16 / 2)
+parser.add_argument('--map_dir', type=str)
+parser.add_argument('--result_dir', type=str)
+parser.add_argument('--channel', type=int, default=3)
+parser.add_argument('--offset', type=int, default=0)
+parser.add_argument('--pad', type=int, default=24)  # (64 / 2) - (16 / 2)
+parser.add_argument('--steps', type=int, default=256)
+parser.add_argument('--relax', type=int, default=3)
+parser.add_argument('--n_thread', type=int, default=8)
 args = parser.parse_args()
 print(args)
-
-ch = args.channel
-steps = 256
-relax = 3
-pad = args.pad
-n_thread = 8
 
 result_dir = args.result_dir
 n_iter = int(result_dir.split('_')[-1])
@@ -44,21 +41,25 @@ result_fns = sorted(glob.glob('%s/*.npy' % result_dir))
 n_results = len(result_fns)
 eval_dir = '%s/evaluation_%d' % (result_dir, n_iter)
 
-all_positive_base = Array(ctypes.c_double, n_results * ch * steps)
+all_positive_base = Array(
+    ctypes.c_double, n_results * args.channel * args.steps)
 all_positive = np.ctypeslib.as_array(all_positive_base.get_obj())
-all_positive = all_positive.reshape((n_results, ch, steps))
+all_positive = all_positive.reshape((n_results, args.channel, args.steps))
 
-all_prec_tp_base = Array(ctypes.c_double, n_results * ch * steps)
+all_prec_tp_base = Array(
+    ctypes.c_double, n_results * args.channel * args.steps)
 all_prec_tp = np.ctypeslib.as_array(all_prec_tp_base.get_obj())
-all_prec_tp = all_prec_tp.reshape((n_results, ch, steps))
+all_prec_tp = all_prec_tp.reshape((n_results, args.channel, args.steps))
 
-all_true_base = Array(ctypes.c_double, n_results * ch * steps)
+all_true_base = Array(
+    ctypes.c_double, n_results * args.channel * args.steps)
 all_true = np.ctypeslib.as_array(all_true_base.get_obj())
-all_true = all_true.reshape((n_results, ch, steps))
+all_true = all_true.reshape((n_results, args.channel, args.steps))
 
-all_recall_tp_base = Array(ctypes.c_double, n_results * ch * steps)
+all_recall_tp_base = Array(
+    ctypes.c_double, n_results * args.channel * args.steps)
 all_recall_tp = np.ctypeslib.as_array(all_recall_tp_base.get_obj())
-all_recall_tp = all_recall_tp.reshape((n_results, ch, steps))
+all_recall_tp = all_recall_tp.reshape((n_results, args.channel, args.steps))
 
 
 def makedirs(dname):
@@ -117,36 +118,36 @@ def worker_thread(result_fn_queue):
         label = cv.imread('%s/%s.tif' %
                           (label_dir, img_id), cv.IMREAD_GRAYSCALE)
         pred = np.load(result_fn)
-        label = label[pad + args.offset - 1:
-                      pad + args.offset - 1 + pred.shape[0],
-                      pad + args.offset - 1:
-                      pad + args.offset - 1 + pred.shape[1]]
+        label = label[args.pad + args.offset - 1:
+                      args.pad + args.offset - 1 + pred.shape[0],
+                      args.pad + args.offset - 1:
+                      args.pad + args.offset - 1 + pred.shape[1]]
         cv.imwrite('%s/label_%s.png' % (out_dir, img_id), label * 125)
 
         print('pred_shape:', pred.shape)
 
-        for c in six.moves.range(ch):
-            for t in six.moves.range(0, steps):
-                threshold = 1.0 / steps * t
+        for c in six.moves.range(args.channel):
+            for t in six.moves.range(0, args.steps):
+                threshold = 1.0 / args.steps * t
 
                 pred_vals = np.array(
                     pred[:, :, c] >= threshold, dtype=np.int32)
 
                 label_vals = np.array(label, dtype=np.int32)
-                if ch > 1:
+                if args.channel > 1:
                     label_vals = np.array(label == c, dtype=np.int32)
 
                 all_positive[i, c, t] = np.sum(pred_vals)
                 all_prec_tp[i, c, t] = relax_precision(
-                    pred_vals, label_vals, relax)
+                    pred_vals, label_vals, args.relax)
 
                 all_true[i, c, t] = np.sum(label_vals)
                 all_recall_tp[i, c, t] = relax_recall(
-                    pred_vals, label_vals, relax)
+                    pred_vals, label_vals, args.relax)
 
             pre_rec, breakeven_pt = get_pre_rec(
                 all_positive[i, c], all_prec_tp[i, c],
-                all_true[i, c], all_recall_tp[i, c], steps)
+                all_true[i, c], all_recall_tp[i, c], args.steps)
 
             draw_pre_rec_curve(pre_rec, breakeven_pt)
             plt.savefig('%s/pr_curve_%d.png' % (out_dir, c))
@@ -160,11 +161,11 @@ def worker_thread(result_fn_queue):
 if __name__ == '__main__':
     result_fn_queue = Queue()
     workers = [Process(target=worker_thread,
-                       args=(result_fn_queue,)) for i in range(n_thread)]
+                       args=(result_fn_queue,)) for i in range(args.n_thread)]
     for w in workers:
         w.start()
     [result_fn_queue.put((i, fn)) for i, fn in enumerate(result_fns)]
-    [result_fn_queue.put((None, None)) for _ in range(n_thread)]
+    [result_fn_queue.put((None, None)) for _ in range(args.n_thread)]
     for w in workers:
         w.join()
     print('all finished')
@@ -173,10 +174,10 @@ if __name__ == '__main__':
     all_prec_tp = np.sum(all_prec_tp, axis=0)
     all_true = np.sum(all_true, axis=0)
     all_recall_tp = np.sum(all_recall_tp, axis=0)
-    for c in six.moves.range(ch):
+    for c in six.moves.range(args.channel):
         pre_rec, breakeven_pt = get_pre_rec(
             all_positive[c], all_prec_tp[c],
-            all_true[c], all_recall_tp[c], steps)
+            all_true[c], all_recall_tp[c], args.steps)
         draw_pre_rec_curve(pre_rec, breakeven_pt)
         plt.savefig('%s/pr_curve_%d.png' % (eval_dir, c))
         np.save('%s/pre_rec_%d' % (eval_dir, c), pre_rec)
