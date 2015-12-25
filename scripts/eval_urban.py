@@ -16,18 +16,26 @@ import glob
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 PATCH_SIZE = 16
 PATCH_PIXELS = PATCH_SIZE ** 2
 STRIDE = 16
-NUM_RATIO = 0.1
+NUM_RATIO = 1. / 3
 
 
 def get_relaxed_pre_rec(p_patch, l_patch):
-    positive = np.sum(p_patch)
+    p_patch = np.array(p_patch, dtype=np.int32)
+    l_patch = np.array(l_patch, dtype=np.int32)
+
+    positive = np.sum(p_patch == 1)
     prec_tp = evaluation.relax_precision(p_patch, l_patch, 3)
-    true = np.sum(l_patch)
+    true = np.sum(l_patch == 1)
     recall_tp = evaluation.relax_recall(p_patch, l_patch, 3)
+
+    if prec_tp > positive or recall_tp > true:
+        print(positive, prec_tp, true, recall_tp)
+        sys.exit('Calculation is wrong.')
 
     return positive, prec_tp, true, recall_tp
 
@@ -61,7 +69,7 @@ def get_complex_regions(args, label_fn, pred_fns):
                   args.pad + args.offset - 1 + pred.shape[1]]
 
     thresh_evals = []
-    for thresh in range(args.steps):
+    for thresh in tqdm(range(args.steps)):
         pred_th = np.zeros(pred.shape, dtype=np.int32)
         th = thresh / float(args.steps - 1)
         for ch in range(pred.shape[2]):
@@ -81,12 +89,11 @@ def get_complex_regions(args, label_fn, pred_fns):
                 road_ch = np.array(l_patch == 2, dtype=np.int32)
                 l_patch = [bgnd_ch, bldg_ch, road_ch]
 
-                num_bldg_pix = np.sum(bldg_ch)
-                num_road_pix = np.sum(road_ch)
+                num_bldg_pix = np.sum(bldg_ch == 1)
+                num_road_pix = np.sum(road_ch == 1)
 
-                # if ((num_bldg_pix > (PATCH_PIXELS * NUM_RATIO)) and
-                #         (num_road_pix > (PATCH_PIXELS * NUM_RATIO))):
-                if ((num_bldg_pix > 0) and (num_road_pix > 0)):
+                if ((num_bldg_pix > (PATCH_PIXELS * NUM_RATIO)) and
+                        (num_road_pix > (PATCH_PIXELS * NUM_RATIO))):
                     region_eval = []
                     for ch in range(pred.shape[2]):
                         p = pred_th[y:y + PATCH_SIZE, x:x + PATCH_SIZE, ch]
@@ -101,8 +108,8 @@ def get_complex_regions(args, label_fn, pred_fns):
             pre = float(prec_tp) / positive if positive > 0 else 0
             rec = float(recall_tp) / true if true > 0 else 0
             if pre > 1.0 or rec > 1.0:
+                print('{}({}):{:.4f} - {:.4f}'.format(ch, thresh, pre, rec))
                 sys.exit('Calculation is wrong.')
-            print('{}({}):{:.4f} - {:.4f}'.format(ch, thresh, pre, rec))
         thresh_evals.append(evals)
     thresh_evals = np.array(thresh_evals)
 
