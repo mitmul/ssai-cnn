@@ -2,9 +2,10 @@ This contains all codes for replicating every results in my Ph. D. thesis.
 
 # Requirements
 - Python 3.5 (conda 3.18.6 with python 3.5.0 is recommended)
-- Chainer 1.5.0.2
-- Cython 0.23.4
-- NumPy 1.10.1
+    - Chainer 1.5.0.2
+    - Cython 0.23.4
+    - NumPy 1.10.1
+    - tqdm
 - OpenCV 3.0.0
 - lmdb 0.87
 - Boost 1.59.0

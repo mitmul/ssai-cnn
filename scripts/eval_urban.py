@@ -21,7 +21,7 @@ from tqdm import tqdm
 PATCH_SIZE = 16
 PATCH_PIXELS = PATCH_SIZE ** 2
 STRIDE = 16
-NUM_RATIO = 1. / 3
+NUM_RATIO = 0
 
 
 def get_relaxed_pre_rec(p_patch, l_patch):
@@ -91,7 +91,6 @@ def get_complex_regions(args, label_fn, pred_fns):
 
                 num_bldg_pix = np.sum(bldg_ch == 1)
                 num_road_pix = np.sum(road_ch == 1)
-
                 if ((num_bldg_pix > (PATCH_PIXELS * NUM_RATIO)) and
                         (num_road_pix > (PATCH_PIXELS * NUM_RATIO))):
                     region_eval = []
@@ -131,7 +130,7 @@ if __name__ == '__main__':
         pred_fns.append((fn, result))
     pred_fns = dict(pred_fns)
 
-    args.out_dir = '{}/urban'.format(args.result_dir)
+    args.out_dir = '{}/urban_{}'.format(args.result_dir, NUM_RATIO)
     if not os.path.exists(args.out_dir):
         os.makedirs(args.out_dir)
 
@@ -154,8 +153,8 @@ if __name__ == '__main__':
                  'x', label='breakeven recall: %f' % (breakeven_pt[1]))
         plt.ylabel('recall')
         plt.xlabel('precision')
-        # plt.ylim([0.0, 1.1])
-        # plt.xlim([0.0, 1.1])
+        plt.ylim([0.0, 1.1])
+        plt.xlim([0.0, 1.1])
         plt.legend(loc='lower left')
         plt.grid(linestyle='--')
         plt.savefig('{}/pre_rec_{}.png'.format(args.out_dir, ch))
