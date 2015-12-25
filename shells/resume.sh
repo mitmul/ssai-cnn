@@ -14,14 +14,15 @@ function resume() {
     --resume_model $2/epoch-$3.model \
     --resume_opt $2/epoch-$3.state \
     --epoch_offset $3 \
+    --lr 0.00005 \
     > mnih_multi.log 2>&1 < /dev/null &
 }
 
-resume 0 results/MnihCNN_multi_2015-12-21_10-45-53    199
-resume 2 results/MnihCNN_multi_2015-12-21_10-45-53_10 199
-resume 3 results/MnihCNN_multi_2015-12-21_10-45-53_40 199
-resume 4 results/MnihCNN_multi_2015-12-21_10-45-53_44 199
-resume 5 results/MnihCNN_multi_2015-12-21_10-45-53_46 199
-resume 6 results/MnihCNN_multi_2015-12-21_10-45-53_47 199
-resume 7 results/MnihCNN_multi_2015-12-21_10-45-53_67 199
-resume 8 results/MnihCNN_multi_2015-12-21_10-45-53_99 199
+resume 0 results/MnihCNN_multi_2015-12-21_10-45-53    296
+resume 2 results/MnihCNN_multi_2015-12-21_10-45-53_10 298
+resume 3 results/MnihCNN_multi_2015-12-21_10-45-53_40 296
+resume 4 results/MnihCNN_multi_2015-12-21_10-45-53_44 299
+#resume 5 results/MnihCNN_multi_2015-12-21_10-45-53_46 300
+resume 6 results/MnihCNN_multi_2015-12-21_10-45-53_47 298
+resume 7 results/MnihCNN_multi_2015-12-21_10-45-53_67 296
+resume 8 results/MnihCNN_multi_2015-12-21_10-45-53_99 298

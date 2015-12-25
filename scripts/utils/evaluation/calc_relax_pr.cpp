@@ -30,15 +30,11 @@ int relax_precision(const np::ndarray& predict,
 
         for (int yy = st_y; yy <= en_y; ++yy) {
           for (int xx = st_x; xx <= en_x; ++xx) {
-            if (label_data[yy * w_lim + xx] == 1) {
-              ++sum;
-              ++true_positive;
-              break;
-            }
+            sum += label_data[yy * w_lim + xx];
           }
-
-          if (sum > 0) break;
         }
+
+        if (sum > 0) true_positive++;
       }
     }
   }
@@ -61,7 +57,7 @@ int relax_recall(const np::ndarray predict,
     for (int x = 0; x < w_lim; ++x) {
       const int32_t label_val = label_data[y * w_lim + x];
 
-      if (label_val > 0) {
+      if (label_val == 1) {
         const int st_y = y - relax >= 0 ? y - relax : 0;
         const int en_y = y + relax < h_lim ? y + relax : h_lim - 1;
         const int st_x = x - relax >= 0 ? x - relax : 0;
@@ -70,15 +66,11 @@ int relax_recall(const np::ndarray predict,
 
         for (int yy = st_y; yy <= en_y; ++yy) {
           for (int xx = st_x; xx <= en_x; ++xx) {
-            if (predict_data[yy * w_lim + xx] == 1) {
-              ++sum;
-              ++true_positive;
-              break;
-            }
+            sum += predict_data[yy * w_lim + xx];
           }
-
-          if (sum > 0) break;
         }
+
+        if (sum > 0) true_positive++;
       }
     }
   }

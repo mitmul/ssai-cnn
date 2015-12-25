@@ -36,8 +36,8 @@ def get_pre_rec(positive, prec_tp, true, recall_tp, steps):
     pre_rec = []
     breakeven = []
     for t in range(steps):
-        # if positive[t] < prec_tp[t] or true[t] < recall_tp[t]:
-        #     sys.exit('calculation is wrong')
+        if positive[t] < prec_tp[t] or true[t] < recall_tp[t]:
+            sys.exit('calculation is wrong')
         pre = float(prec_tp[t]) / positive[t] if positive[t] > 0 else 0
         rec = float(recall_tp[t]) / true[t] if true[t] > 0 else 0
         pre_rec.append([pre, rec])
@@ -96,6 +96,13 @@ def get_complex_regions(args, label_fn, pred_fns):
         evals = np.zeros((pred.shape[2], 4))
         for r in patch_evals:
             evals += np.array(r)
+        for ch in range(pred.shape[2]):
+            positive, prec_tp, true, recall_tp = evals[ch]
+            pre = float(prec_tp) / positive if positive > 0 else 0
+            rec = float(recall_tp) / true if true > 0 else 0
+            if pre > 1.0 or rec > 1.0:
+                sys.exit('Calculation is wrong.')
+            print('{}({}):{:.4f} - {:.4f}'.format(ch, thresh, pre, rec))
         thresh_evals.append(evals)
     thresh_evals = np.array(thresh_evals)
 
@@ -117,7 +124,7 @@ if __name__ == '__main__':
         pred_fns.append((fn, result))
     pred_fns = dict(pred_fns)
 
-    args.out_dir = '{}/ratio-{:.2f}'.format(args.result_dir, NUM_RATIO)
+    args.out_dir = '{}/urban'.format(args.result_dir)
     if not os.path.exists(args.out_dir):
         os.makedirs(args.out_dir)
 
@@ -125,8 +132,9 @@ if __name__ == '__main__':
     n_ch = np.load(list(pred_fns.items())[0][1]).shape[2]
     evals = np.zeros((256, n_ch, 4))
     for label_fn in glob.glob('{}/*.tif*'.format(args.test_map_dir)):
-        print(label_fn)
         evals += get_complex_regions(args, label_fn, pred_fns)
+        print(label_fn)
+    np.save('{}/evals'.format(args.out_dir), evals)
 
     for ch in range(n_ch):
         e = evals[:, ch, :]

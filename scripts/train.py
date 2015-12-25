@@ -212,12 +212,12 @@ def one_epoch(args, model, optimizer, epoch, train):
         num += t.data.shape[0]
         n_iter += 1
 
-        if train:
-            logging.info('epoch:{}\titer:{}\ttrain loss:{}'.format(
-                epoch, n_iter, sum_loss / num))
-        else:
-            logging.info('epoch:{}\titer:{}\tvalidate loss:{}'.format(
-                epoch, n_iter, sum_loss / num))
+        # if train:
+        #     logging.info('epoch:{}\titer:{}\ttrain loss:{}'.format(
+        #         epoch, n_iter, sum_loss / num))
+        # else:
+        #     logging.info('epoch:{}\titer:{}\tvalidate loss:{}'.format(
+        #         epoch, n_iter, sum_loss / num))
 
         del x, t
 

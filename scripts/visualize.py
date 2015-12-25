@@ -37,11 +37,15 @@ def tile_W(W, pad=1):
                        n_side * w + (n_side + 1) * pad, 3),
                       dtype=np.uint8)
     W = W if not args.gpu >= 0 else xp.asnumpy(W)
-    W -= W.min()
-    W /= W.max()
-    W = (W * 255).astype(np.uint8)
+    # W -= W.min()
+    # W /= W.max()
+    # W = (W * 255).astype(np.uint8)
     for i in range(n_patch):
         patch = W[i].transpose(1, 2, 0)
+        patch -= patch.min()
+        patch /= patch.max()
+        patch = (patch * 255).astype(np.uint8)
+
         y = i // n_side
         y = pad * (y + 1) + y * h
         x = i % n_side
@@ -156,15 +160,15 @@ if __name__ == '__main__':
                     middle = middle.transpose((1, 2, 0))
                     tiled = middle * 255
                     tiled = tiled if not args.gpu >= 0 else xp.asnumpy(tiled)
-                elif name == 'reshape':
-                    plt.clf()
-                    a = middle[0] if not args.gpu >= 0 \
-                        else xp.asnumpy(middle[0])
-                    a = a.ravel()
-                    print(middle[0].std(), middle[1].std(), middle[2].std())
-                    plt.hist(a)
-                    print('hist')
-                    plt.savefig('{}_0_hist.png'.format(out_fn))
+                # elif name == 'reshape':
+                #     plt.clf()
+                #     a = middle[0] if not args.gpu >= 0 \
+                #         else xp.asnumpy(middle[0])
+                #     a = a.ravel()
+                #     print(middle[0].std(), middle[1].std(), middle[2].std())
+                #     plt.hist(a)
+                #     print('hist')
+                #     plt.savefig('{}_0_hist.png'.format(out_fn))
                 else:
                     tiled = tile_middle(name, middle)
                 cv.imwrite('{}_{}.png'.format(out_fn, name), tiled)
