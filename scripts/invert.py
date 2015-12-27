@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+import sys
+if 'linux' in sys.platform:
+    import matplotlib
+    matplotlib.use('Agg')
+import re
 import os
 import imp
 import argparse
@@ -7,6 +12,7 @@ import chainer
 import cv2 as cv
 import numpy as np
 import chainer.functions as F
+import matplotlib.pyplot as plt
 from chainer import cuda
 from chainer import optimizers
 from chainer import serializers
@@ -20,8 +26,13 @@ def get_args():
     parser.add_argument('--img_fn', type=str,
                         default='data/mass_merged/trans_test/107.jpg')
     parser.add_argument('--gpu', type=int, default=0)
+    parser.add_argument('--opt', type=str, default='MomentumSGD')
     parser.add_argument('--in_size', type=int, default=64)
     parser.add_argument('--x0_sigma', type=str, default='data/x0_sigma.txt')
+    parser.add_argument('--lambda_tv', type=float, default=5)
+    parser.add_argument('--lambda_lp', type=float, default=4e-10)
+    parser.add_argument('--beta', type=float, default=2)
+    parser.add_argument('--p', type=float, default=6)
     args = parser.parse_args()
 
     for line in open(args.x0_sigma):
@@ -31,63 +42,103 @@ def get_args():
     return args
 
 
-def preprocess(img):
-    if img.shape[2] != 3:
-        raise ValueError('Wrong number of channels.')
-    img = img.astype(np.float)
-    mean = img.reshape((-1, 3)).mean(axis=0)
-    std = img.reshape((-1, 3)).std(axis=0)
-    img -= mean
-    img /= std
-    img = img.transpose(2, 0, 1)
-    img = img.astype(np.float32)
+class InvertFeature(object):
 
-    return img, mean, std
-
-
-def deprocess(img, mean, std):
-    img = img.transpose(1, 2, 0)
-    img *= std
-    img += mean
-    img = np.clip(img, 0, 255).astype(np.uint8)
-
-    return img
-
-
-class InvertLoss(object):
-
-    def __init__(self, model, in_size, layer, x0_sigma, img, lambda_tv=5,
-                 lambda_lp=4e-10, beta=2, p=6):
+    def __init__(self, args):
         xp = cuda.cupy if args.gpu >= 0 else np
-        self.model = model
         Wh_data = xp.array([[[[1], [-1]]]], dtype='f')
         Ww_data = xp.array([[[[1, -1]]]], dtype='f')
         self.Wh = chainer.Variable(Wh_data)
         self.Ww = chainer.Variable(Ww_data)
-        self.in_size = in_size
-        self.layer = layer
-        self.x0_sigma = x0_sigma
-        self.lambda_tv = lambda_tv
-        self.lambda_lp = lambda_lp
-        self.beta = beta
-        self.p = p
+        self.args = args
 
-        self.create_target(img)
+        self.load_model()
+        self.create_dir()
+        self.get_img_var()
+        self.create_target()
+        self.create_image_plane()
+        self.prepare_optimizer()
+        self.create_lr_schedule()
 
-    def create_target(self, img):
-        self.x0_data = xp.asarray(img[np.newaxis].copy())
+    def create_dir(self):
+        out_dir = os.path.dirname(self.args.param)
+        epoch = int(re.search('epoch-([0-9]+)',
+                              os.path.basename(self.args.param)).groups()[0])
+        self.out_dir = '{}/inv-{}'.format(out_dir, epoch)
+        if not os.path.exists(self.out_dir):
+            os.mkdir(self.out_dir)
+
+    def preprocess(self, img):
+        if img.shape[2] != 3:
+            raise ValueError('Wrong number of channels.')
+        img = img.astype(np.float)
+        self.mean = img.reshape((-1, 3)).mean(axis=0)
+        self.std = img.reshape((-1, 3)).std(axis=0)
+        img -= self.mean
+        img /= self.std
+        img = img.transpose(2, 0, 1)
+        self.img = img.astype(np.float32)
+
+    def deprocess(self, img):
+        img = img.transpose(1, 2, 0)
+        img *= self.std
+        img += self.mean
+        img = np.clip(img, 0, 255).astype(np.uint8)
+
+        return img
+
+    def get_img_var(self):
+        img = cv.imread(args.img_fn)
+        img = img[:, :img.shape[1] / 2, :]
+        cv.imwrite('{}/input.png'.format(self.out_dir), img)
+        self.preprocess(img)
+
+    def create_target(self):
+        xp = cuda.cupy if self.args.gpu >= 0 else np
+        self.x0_data = xp.asarray(self.img[np.newaxis].copy())
         x0 = chainer.Variable(self.x0_data, volatile=True)
 
         # Extract feature from target image
         self.y0 = self.extract_feature(x0)
         self.y0.volatile = False
         y0_sigma = np.linalg.norm(cuda.to_cpu(self.y0.data))
-        self.lambda_euc = self.x0_sigma ** 2 / y0_sigma ** 2
+        self.lambda_euc = self.args.x0_sigma ** 2 / y0_sigma ** 2
+
+    def create_image_plane(self):
+        xp = cuda.cupy if self.args.gpu >= 0 else np
+        x_data = np.random.randn(*self.x0_data.shape).astype('f')
+        x_data = x_data / np.linalg.norm(x_data) * args.x0_sigma
+        x_data = xp.asarray(x_data)
+        self.x_link = chainer.links.Parameter(x_data)
+
+    def load_model(self):
+        model_fn = os.path.basename(self.args.model)
+        self.model = imp.load_source(
+            model_fn.split('.')[0], self.args.model).model
+        self.model.train = False
+        serializers.load_hdf5(self.args.param, self.model)
+        if args.gpu >= 0:
+            self.model.to_gpu()
+
+    def prepare_optimizer(self):
+        if args.opt == 'MomentumSGD':
+            self.opt = optimizers.MomentumSGD(momentum=0.9)
+        elif args.opt == 'Adam':
+            self.opt = optimizers.Adam()
+        else:
+            raise ValueError('Opt should be MomentumSGD or Adam.')
+        self.opt.setup(self.x_link)
+
+    def create_lr_schedule(self):
+        self.lr_schedule = 0.0015 * np.array(
+            [0.1] * 10000 +
+            [0.05] * 5000 +
+            [0.01] * 5000, dtype='f')
 
     def extract_feature(self, x):
         middles = dict(self.model.middle_layers(x))
 
-        return middles[self.layer]
+        return middles[self.args.layer]
 
     def tvh(self, x):
         return F.convolution_2d(x, W=self.Wh)
@@ -96,9 +147,11 @@ class InvertLoss(object):
         return F.convolution_2d(x, W=self.Ww)
 
     def tv_norm(self, x):
-        diffh = self.tvh(F.reshape(x, (3, 1, self.in_size, self.in_size)))
-        diffw = self.tvw(F.reshape(x, (3, 1, self.in_size, self.in_size)))
-        tv = (F.sum(diffh ** 2) + F.sum(diffw ** 2)) ** (self.beta / 2.)
+        diffh = self.tvh(
+            F.reshape(x, (3, 1, self.args.in_size, self.args.in_size)))
+        diffw = self.tvw(
+            F.reshape(x, (3, 1, self.args.in_size, self.args.in_size)))
+        tv = (F.sum(diffh ** 2) + F.sum(diffw ** 2)) ** (self.args.beta / 2.)
 
         return tv
 
@@ -106,11 +159,11 @@ class InvertLoss(object):
         y = self.extract_feature(x)
         e = F.mean_squared_error(self.y0, y)
         tv = self.tv_norm(x)
-        loss = (self.lambda_euc * float(self.y0.data.size) * e +
-                self.lambda_tv * tv + self.lambda_lp * F.sum(x ** self.p))
-        print(loss.data)
+        self.loss = (self.lambda_euc * float(self.y0.data.size) * e +
+                     self.args.lambda_tv * tv +
+                     self.args.lambda_lp * F.sum(x ** self.args.p))
 
-        return loss
+        return self.loss
 
 
 if __name__ == '__main__':
@@ -118,51 +171,28 @@ if __name__ == '__main__':
 
     if args.gpu >= 0:
         cuda.get_device(args.gpu).use()
-    xp = cuda.cupy if args.gpu >= 0 else np
 
-    model_fn = os.path.basename(args.model)
-    model = imp.load_source(model_fn.split('.')[0], args.model).model
-    model.train = False
-    serializers.load_hdf5(args.param, model)
-    if args.gpu >= 0:
-        model.to_gpu()
+    inverter = InvertFeature(args)
 
-    # Initialize parameters
-    img = cv.imread(args.img_fn)
-    img = img[:, :img.shape[1] / 2, :]
-    cv.imwrite('input.png', img)
-    img, mean, std = preprocess(img)
+    i = 0
+    loss = []
+    while True:
+        if args.opt == 'MomentumSGD':
+            inverter.opt.lr = inverter.lr_schedule[i]
 
-    loss = InvertLoss(model, args.in_size, args.layer, args.x0_sigma, img)
+        x = inverter.x_link.W
+        inverter.opt.update(inverter, x)
+        loss.append(cuda.to_cpu(inverter.loss.data))
+        print(cuda.to_cpu(inverter.loss.data))
 
-    # Image plane to be optimized
-    x_data = np.random.randn(*loss.x0_data.shape).astype('f')
-    x_data = x_data / np.linalg.norm(x_data) * args.x0_sigma
-    x_data = xp.asarray(x_data)
-    x_link = chainer.links.Parameter(x_data)
+        i += 1
+        if i >= len(inverter.lr_schedule):
+            break
 
-    # Define hyper-parameters
-    learning_rate = 0.0015 * np.array(
-        [0.1] * 10000 +
-        [0.05] * 5000 +
-        [0.01] * 5000, dtype='f')
-    momentum = 0.9
-
-    opt = optimizers.MomentumSGD(momentum=momentum)
-    opt.setup(x_link)
-
-    lr_prev = 0
-    for lr in learning_rate:
-        if lr != lr_prev:
-            opt.lr = lr
-            lr_prev = lr
-            opt.momentum = 0
-            print('lr:', opt.lr)
-        else:
-            opt.momentum = 0.9
-
-        x = x_link.W
-        opt.update(loss, x)
-
-    result = deprocess(cuda.to_cpu(x.data)[0], mean, std)
-    cv.imwrite('{}_result.png'.format(args.layer), result)
+    result = inverter.deprocess(cuda.to_cpu(x.data)[0])
+    cv.imwrite('{}/{}_result.png'.format(inverter.out_dir, args.layer), result)
+    plt.plot(loss)
+    plt.savefig('{}/{}_loss.png'.format(inverter.out_dir, args.layer))
+    with open('{}/{}.log'.format(inverter.out_dir, args.layer), 'w') as fp:
+        for l in loss:
+            print('{}'.format(l), file=fp)

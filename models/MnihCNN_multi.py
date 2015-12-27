@@ -58,8 +58,15 @@ class MnihCNN_multi(chainer.Chain):
         h = F.relu(h)
         middles.append(('relu3', h))
 
-        h = F.relu(self.fc4(h))
+        h = self.fc4(h)
+        middles.append(('fc4', h))
+
+        h = F.relu(h)
+        middles.append(('relu4', h))
+
         h = self.fc5(h)
+        middles.append(('fc5', h))
+
         h = F.reshape(h, (x.data.shape[0], 3, 16, 16))
         middles.append(('reshape', h))
 
