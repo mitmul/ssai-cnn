@@ -82,7 +82,7 @@ def create_result_dir(args):
             os.path.splitext(os.path.basename(args.model))[0],
             time.strftime('%Y-%m-%d_%H-%M-%S'))
         if os.path.exists(result_dir):
-            result_dir += '_{}'.format(np.random.randint(100))
+            result_dir += '_{}'.format(time.clock())
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
     else:
