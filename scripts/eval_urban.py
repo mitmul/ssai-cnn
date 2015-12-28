@@ -21,7 +21,8 @@ from tqdm import tqdm
 PATCH_SIZE = 16
 PATCH_PIXELS = PATCH_SIZE ** 2
 STRIDE = 16
-NUM_RATIO = 0.5
+NUM_RATIO = 0
+RELAX = 0
 
 
 def get_relaxed_pre_rec(p_patch, l_patch):
@@ -29,9 +30,9 @@ def get_relaxed_pre_rec(p_patch, l_patch):
     l_patch = np.array(l_patch, dtype=np.int32)
 
     positive = np.sum(p_patch == 1)
-    prec_tp = evaluation.relax_precision(p_patch, l_patch, 3)
+    prec_tp = evaluation.relax_precision(p_patch, l_patch, RELAX)
     true = np.sum(l_patch == 1)
-    recall_tp = evaluation.relax_recall(p_patch, l_patch, 3)
+    recall_tp = evaluation.relax_recall(p_patch, l_patch, RELAX)
 
     if prec_tp > positive or recall_tp > true:
         print(positive, prec_tp, true, recall_tp)

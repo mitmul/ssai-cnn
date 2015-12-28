@@ -61,7 +61,10 @@ def tile_middle(name, middle, pad=1):
 
     n_patch = middle.shape[0]
     n_side = int(np.ceil(np.sqrt(n_patch)))
-    h, w = middle.shape[1:]
+    if middle.ndim == 3:
+        h, w = middle.shape[1:]
+    else:
+        h, w, = 1, 1
     canvas = xp.ones((n_side * h + (n_side + 1) * pad,
                       n_side * w + (n_side + 1) * pad),
                      dtype=np.uint8) * 125
@@ -155,6 +158,7 @@ if __name__ == '__main__':
             middles = model.middle_layers(Variable(o_patch, volatile=True))
 
             for name, middle in middles:
+                print(name)
                 middle = middle.data[0]
                 if name == 'pred':
                     middle = middle.transpose((1, 2, 0))

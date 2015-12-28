@@ -20,7 +20,8 @@ def get_args():
     parser.add_argument('--param', type=str)
     parser.add_argument('--layer', type=str, default='conv1')
     parser.add_argument('--img_fn', type=str,
-                        default='data/mass_merged/trans_test/107.jpg')
+                        default='data/mass_merged/trans_test/16.jpg')
+    # 16, 17
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--opt', type=str, default='Adam')
     parser.add_argument('--in_size', type=int, default=64)
