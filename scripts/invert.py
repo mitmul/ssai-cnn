@@ -19,9 +19,7 @@ def get_args():
     parser.add_argument('--model', type=str)
     parser.add_argument('--param', type=str)
     parser.add_argument('--layer', type=str, default='conv1')
-    parser.add_argument('--img_fn', type=str,
-                        default='data/mass_merged/trans_test/16.jpg')
-    # 16, 17
+    parser.add_argument('--img_fn', type=str)
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--opt', type=str, default='Adam')
     parser.add_argument('--in_size', type=int, default=64)
@@ -32,6 +30,7 @@ def get_args():
     parser.add_argument('--p', type=float, default=6)
     parser.add_argument('--adam_alpha', type=float, default=0.1)
     parser.add_argument('--channels', type=int, default=-1)
+    parser.add_argument('--max_iter', type=int, default=10000)
     args = parser.parse_args()
 
     for line in open(args.x0_sigma):
@@ -67,7 +66,7 @@ class InvertFeature(object):
             model_fn.split('.')[0], self.args.model).model
         self.model.train = False
         serializers.load_hdf5(self.args.param, self.model)
-        if args.gpu >= 0:
+        if self.args.gpu >= 0:
             self.model.to_gpu()
 
     def create_dir(self):
@@ -79,7 +78,7 @@ class InvertFeature(object):
             os.mkdir(self.out_dir)
 
     def get_img_var(self):
-        img = cv.imread(args.img_fn)
+        img = cv.imread(self.args.img_fn)
         cv.imwrite('{}/original.png'.format(self.out_dir), img)
         img = img[:, :img.shape[1] / 2, :]
         cv.imwrite('{}/input.png'.format(self.out_dir), img)
@@ -135,13 +134,15 @@ class InvertFeature(object):
         self.x_link = chainer.links.Parameter(x_data)
 
         initial_img = self.deprocess(cuda.to_cpu(self.x_link.W.data)[0])
-        cv.imwrite('{}/{}_init.png'.format(self.out_dir, self.args.layer),
-                   initial_img)
+        self.img_id = int(
+            re.search('([0-9]+).jpg', self.args.img_fn).groups()[0])
+        cv.imwrite('{}/{}_{}_init.png'.format(
+            self.img_id, self.out_dir, self.args.layer), initial_img)
 
     def prepare_optimizer(self):
-        if args.opt == 'MomentumSGD':
+        if self.args.opt == 'MomentumSGD':
             self.opt = optimizers.MomentumSGD(momentum=0.9)
-        elif args.opt == 'Adam':
+        elif self.args.opt == 'Adam':
             self.opt = optimizers.Adam(alpha=self.args.adam_alpha)
             print('Adam alpha=', self.args.adam_alpha)
         else:
@@ -190,23 +191,24 @@ if __name__ == '__main__':
 
     i = 0
     while True:
-        try:
-            if args.opt == 'MomentumSGD':
-                inverter.opt.lr = inverter.lr_schedule[i]
+        if args.opt == 'MomentumSGD':
+            inverter.opt.lr = inverter.lr_schedule[i]
+        x = inverter.x_link.W
+        inverter.opt.update(inverter, x)
+        print('{}:\t{:.5f}'.format(i, inverter.opt.lr),
+              cuda.to_cpu(inverter.loss.data))
 
-            x = inverter.x_link.W
-            inverter.opt.update(inverter, x)
-            print('{:.5f}'.format(inverter.opt.lr),
-                  cuda.to_cpu(inverter.loss.data))
+        i += 1
+        if args.opt == 'MomentumSGD' and i >= len(inverter.lr_schedule):
+            break
+        if args.opt == 'Adam' and i == args.max_iter:
+            break
 
-            i += 1
-            if args.opt == 'MomentumSGD' and i >= len(inverter.lr_schedule):
-                break
-        except KeyboardInterrupt:
-            result = inverter.deprocess(cuda.to_cpu(x.data)[0])
-            if args.channels < 0:
-                cv.imwrite('{}/{}_result.png'.format(
-                    inverter.out_dir, args.layer), result)
-            else:
-                cv.imwrite('{}/{}_{}_result.png'.format(
-                    inverter.out_dir, args.layer, args.channels), result)
+    result = inverter.deprocess(cuda.to_cpu(x.data)[0])
+    if args.channels < 0:
+        cv.imwrite('{}/{}_{}_result.png'.format(
+            inverter.img_id, inverter.out_dir, args.layer), result)
+    else:
+        cv.imwrite('{}/{}_{}_{}_result.png'.format(
+            inverter.img_id, inverter.out_dir, args.layer, args.channels),
+            result)
