@@ -3,7 +3,6 @@
 #include <boost/python.hpp>
 #include <boost/numpy.hpp>
 
-namespace p  = boost::python;
 namespace np = boost::numpy;
 
 int relax_precision(const np::ndarray& predict,

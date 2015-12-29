@@ -10,8 +10,8 @@ import argparse
 import numpy as np
 import cv2 as cv
 import sys
-sys.path.insert(0, 'scripts/utils')
-from split_to_patches import divide_to_patches
+sys.path.insert(0, 'scripts/utils/patches')
+from patches import divide_to_patches
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str)
@@ -112,7 +112,7 @@ def create_patches(sat_patch_size, map_patch_size, stride, map_ch,
         map_im = map_im[:, :, np.newaxis]
         st = time.time()
         sat_patches, map_patches, n = divide_to_patches(
-            stride, map_ch, sat_size, map_size, sat_im, map_im)
+            stride, sat_size, map_size, sat_im, map_im)
         print('divide:{}'.format(time.time() - st))
         sat_patches = np.asarray(sat_patches, dtype=np.uint8)
         map_patches = np.asarray(map_patches, dtype=np.uint8)

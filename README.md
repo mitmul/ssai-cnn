@@ -59,7 +59,7 @@ $ python setup.py build_ext -i
 ```
 $ cd $SSAI_HOME/scripts/utils/transform
 $ mkdir build && cd build
-$ bash ../build.sh
+$ bash ../../build.sh
 ```
 
 On OSX:

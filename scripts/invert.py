@@ -46,6 +46,7 @@ class InvertFeature(object):
 
     def __init__(self, args):
         xp = cuda.cupy if args.gpu >= 0 else np
+        xp.random.seed(args.seed)
         Wh_data = xp.array([[[[1], [-1]]]], dtype='f')
         Ww_data = xp.array([[[[1, -1]]]], dtype='f')
         self.Wh = chainer.Variable(Wh_data)
@@ -78,10 +79,13 @@ class InvertFeature(object):
             os.mkdir(self.out_dir)
 
     def get_img_var(self):
+        self.img_id = int(
+            re.search('([0-9]+).jpg', self.args.img_fn).groups()[0])
+
         img = cv.imread(self.args.img_fn)
-        cv.imwrite('{}/original.png'.format(self.out_dir), img)
+        cv.imwrite('{}/{}_original.png'.format(self.out_dir, self.img_id), img)
         img = img[:, :img.shape[1] / 2, :]
-        cv.imwrite('{}/input.png'.format(self.out_dir), img)
+        cv.imwrite('{}/{}_input.png'.format(self.out_dir, self.img_id), img)
         self.preprocess(img)
 
     def preprocess(self, img):
@@ -132,12 +136,9 @@ class InvertFeature(object):
         x_data = x_data / np.linalg.norm(x_data) * self.args.x0_sigma
         x_data = xp.asarray(x_data, dtype=xp.float32)
         self.x_link = chainer.links.Parameter(x_data)
-
-        initial_img = self.deprocess(cuda.to_cpu(self.x_link.W.data)[0])
-        self.img_id = int(
-            re.search('([0-9]+).jpg', self.args.img_fn).groups()[0])
-        cv.imwrite('{}/{}_{}_init.png'.format(
-            self.img_id, self.out_dir, self.args.layer), initial_img)
+        # initial_img = self.deprocess(cuda.to_cpu(self.x_link.W.data)[0])
+        # cv.imwrite('{}/{}_{}_init.png'.format(
+        #     self.out_dir, self.img_id, self.args.layer), initial_img)
 
     def prepare_optimizer(self):
         if self.args.opt == 'MomentumSGD':
@@ -189,14 +190,20 @@ if __name__ == '__main__':
 
     inverter = InvertFeature(args)
 
+    min_error = np.finfo('f').max
+    optimal_x = None
     i = 0
     while True:
         if args.opt == 'MomentumSGD':
             inverter.opt.lr = inverter.lr_schedule[i]
         x = inverter.x_link.W
         inverter.opt.update(inverter, x)
-        print('{}:\t{:.5f}'.format(i, inverter.opt.lr),
-              cuda.to_cpu(inverter.loss.data))
+
+        l = cuda.to_cpu(inverter.loss.data)
+        if l < min_error:
+            optimal_x = x
+            min_error = l
+        print('{}:\tloss:{}\tmin_loss:{}'.format(i, l, min_error))
 
         i += 1
         if args.opt == 'MomentumSGD' and i >= len(inverter.lr_schedule):
@@ -204,11 +211,11 @@ if __name__ == '__main__':
         if args.opt == 'Adam' and i == args.max_iter:
             break
 
-    result = inverter.deprocess(cuda.to_cpu(x.data)[0])
+    result = inverter.deprocess(cuda.to_cpu(optimal_x.data)[0])
     if args.channels < 0:
         cv.imwrite('{}/{}_{}_result.png'.format(
-            inverter.img_id, inverter.out_dir, args.layer), result)
+            inverter.out_dir, inverter.img_id, args.layer), result)
     else:
         cv.imwrite('{}/{}_{}_{}_result.png'.format(
-            inverter.img_id, inverter.out_dir, args.layer, args.channels),
+            inverter.out_dir, inverter.img_id, args.layer, args.channels),
             result)
