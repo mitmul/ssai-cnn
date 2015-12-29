@@ -2,7 +2,8 @@
 
 function train() {
     echo $1
-    CHAINER_SEED=$1 nohup python scripts/train.py \
+    CHAINER_TYPE_CHECK=0 CHAINER_SEED=$1 \
+    nohup python scripts/train.py \
     --seed $1 \
     --gpu $1 \
     --model models/MnihCNN_$2.py \

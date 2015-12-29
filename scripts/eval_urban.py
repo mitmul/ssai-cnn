@@ -2,14 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import sys
-sys.path.insert(0, 'scripts/utils/evaluation/build')
-
 if 'linux' in sys.platform:
     import matplotlib
     matplotlib.use('Agg')
 
 import argparse
-import evaluation
 import os
 import re
 import glob
@@ -17,6 +14,8 @@ import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+from utils.evaluation import relax_precision
+from utils.evaluation import relax_recall
 
 PATCH_SIZE = 16
 PATCH_PIXELS = PATCH_SIZE ** 2
@@ -30,9 +29,9 @@ def get_relaxed_pre_rec(p_patch, l_patch):
     l_patch = np.array(l_patch, dtype=np.int32)
 
     positive = np.sum(p_patch == 1)
-    prec_tp = evaluation.relax_precision(p_patch, l_patch, RELAX)
+    prec_tp = relax_precision(p_patch, l_patch, RELAX)
     true = np.sum(l_patch == 1)
-    recall_tp = evaluation.relax_recall(p_patch, l_patch, RELAX)
+    recall_tp = relax_recall(p_patch, l_patch, RELAX)
 
     if prec_tp > positive or recall_tp > true:
         print(positive, prec_tp, true, recall_tp)

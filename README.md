@@ -47,41 +47,11 @@ $ cmake -DPYTHON_LIBRARY=$HOME/anaconda3/lib/libpython3.5m.so ../
 $ make install
 ```
 
-## cython extensions
+## Build utils
 
 ```
 $ cd $SSAI_HOME/scripts/utils
-$ python setup.py build_ext -i
-```
-
-## transformer
-
-```
-$ cd $SSAI_HOME/scripts/utils/transform
-$ mkdir build && cd build
-$ bash ../../build.sh
-```
-
-On OSX:
-
-```
-cmake \
--DPYTHON_LIBRARY=/Users/saito/.pyenv/versions/anaconda3-2.4.0/lib/libpython3.5m.dylib \
--DPYTHON_INCLUDE_DIR=/Users/saito/.pyenv/versions/anaconda3-2.4.0/include/python3.5m \
--DBoost_INCLUDE_DIR=/opt/local/include \
--DBoost_NumPy_INCLUDE_DIR=/opt/local/include \
--DBoost_NumPy_LIBRARY_DIR=/opt/local/lib \
--DOpenCV_DIR=/opt/local/share/OpenCV \
--Wno-dev \
-../
-```
-
-## evaluation tools
-
-```
-$ cd $SSAI_HOME/scripts/utils/evaluation
-$ mkdir build && cd build
-$ bash ../build.sh
+$ bash build.sh
 ```
 
 # Create Dataset

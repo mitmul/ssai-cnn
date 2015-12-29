@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
-sys.path.insert(0, 'scripts/utils/transform')
 import time
 import os
 import lmdb
 import argparse
 import numpy as np
 import cv2 as cv
-from transformer import transform
+from utils.transformer import transform
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

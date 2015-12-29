@@ -1,9 +1,5 @@
 #! /bin/bash
 
-cd scripts/utils
-python setup.py build_ext -i
-cd ../..
-
 python scripts/create_dataset.py --dataset multi
 python scripts/create_dataset.py --dataset single
 python scripts/create_dataset.py --dataset roads_mini

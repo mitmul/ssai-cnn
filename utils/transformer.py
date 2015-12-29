@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
-sys.path.insert(0, 'scripts/utils/transform/build')
 import time
 import numpy as np
-from transform import batch_transform
+from utils.transform import batch_transform
 
 
 def transform(sat_batch, map_batch, fliplr, rotate, norm, sat_out_h, sat_out_w,

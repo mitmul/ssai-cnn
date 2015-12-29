@@ -9,9 +9,7 @@ import lmdb
 import argparse
 import numpy as np
 import cv2 as cv
-import sys
-sys.path.insert(0, 'scripts/utils/patches')
-from patches import divide_to_patches
+from utils.patches import divide_to_patches
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str)

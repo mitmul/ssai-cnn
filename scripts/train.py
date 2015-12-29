@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
-import os
-sys.path.insert(0, 'scripts/utils')
-sys.path.insert(0, 'scripts/utils/transform')
-os.environ["CHAINER_TYPE_CHECK"] = "0"
-
 import re
 import six
 import time
@@ -18,7 +12,7 @@ import argparse
 import chainer
 import numpy as np
 from chainer import cuda, optimizers, serializers, Variable
-from transformer import transform
+from utils.transformer import transform
 from multiprocessing import Process, Queue
 from draw_loss import draw_loss
 
