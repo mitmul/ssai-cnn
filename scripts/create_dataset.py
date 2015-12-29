@@ -109,12 +109,12 @@ def create_patches(sat_patch_size, map_patch_size, stride, map_ch,
         map_im = cv.imread(map_fn, cv.IMREAD_GRAYSCALE)
         map_im = map_im[:, :, np.newaxis]
         st = time.time()
-        sat_patches, map_patches, n = divide_to_patches(
+        sat_patches, map_patches = divide_to_patches(
             stride, sat_size, map_size, sat_im, map_im)
         print('divide:{}'.format(time.time() - st))
         sat_patches = np.asarray(sat_patches, dtype=np.uint8)
         map_patches = np.asarray(map_patches, dtype=np.uint8)
-        for patch_i in range(n):
+        for patch_i in range(sat_patches.shape[0]):
             sat_patch = sat_patches[patch_i]
             map_patch = map_patches[patch_i]
             key = b'%010d' % keys[n_patches]

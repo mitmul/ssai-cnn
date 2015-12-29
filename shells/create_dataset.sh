@@ -1,4 +1,5 @@
 #! /bin/bash
+export PYTHONPATH=".":$PYTHONPATH
 
 python scripts/create_dataset.py --dataset multi
 python scripts/create_dataset.py --dataset single
