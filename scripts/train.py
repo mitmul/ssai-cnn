@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import re
 import six
 import time
@@ -306,7 +307,9 @@ if __name__ == '__main__':
 
         logging.info('learning rate:{}'.format(optimizer.lr))
         model, optimizer = one_epoch(args, model, optimizer, epoch, True)
-        # one_epoch(args, model, optimizer, epoch, False)
+
+        # if epoch == 1 or epoch % args.snapshot == 0:
+            # one_epoch(args, model, optimizer, epoch, False)
 
         # draw curve
         draw_loss('{}/log.txt'.format(args.result_dir),

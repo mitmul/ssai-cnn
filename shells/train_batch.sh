@@ -1,5 +1,7 @@
 #! /bin/bash
 
+export PYTHONPATH=".":$PYTHONPATH
+
 function train() {
     echo $1
     CHAINER_TYPE_CHECK=0 CHAINER_SEED=$1 \

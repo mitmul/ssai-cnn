@@ -63,10 +63,10 @@ $ bash shells/create_dataset.sh
 
 Dataset         | Training | Validation | Test
 :-------------: | :------: | :--------: | :----:
-mass_roads      | 8458173  | 126281     | 440932
-mass_roads_mini | 1119872  | 36100      | 89968
-mass_buildings  | 1119872  | 36100      | 89968
-mass_merged     | 1119872  | 36100      | 89968
+mass_roads      | 8580352  | 108416     | 379456
+mass_roads_mini | 1060928  | 30976      | 77440
+mass_buildings  | 1060928  | 30976      | 77440
+mass_merged     | 1060928  | 30976      | 77440
 
 # Start Training
 

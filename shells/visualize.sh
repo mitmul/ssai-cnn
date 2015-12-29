@@ -7,6 +7,7 @@ function visualize() {
     --out_dir results/$1/mid-$3
 }
 
+visualize MnihCNN_cis_2015-12-28_04-40-30 MnihCNN_cis 20
 visualize MnihCNN_cis_2015-12-28_04-40-30 MnihCNN_cis 10
 visualize MnihCNN_cis_2015-12-28_04-40-30 MnihCNN_cis 20
 visualize MnihCNN_cis_2015-12-28_04-40-30 MnihCNN_cis 30
