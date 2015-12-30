@@ -20,8 +20,8 @@ from utils.evaluation import relax_recall
 PATCH_SIZE = 16
 PATCH_PIXELS = PATCH_SIZE ** 2
 STRIDE = 16
-NUM_RATIO = 0
-RELAX = 0
+NUM_RATIO = 1.0 / 3.0
+RELAX = 3
 
 
 def get_relaxed_pre_rec(p_patch, l_patch):

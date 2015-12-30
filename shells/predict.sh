@@ -2,34 +2,36 @@
 
 function predict() {
     nohup python scripts/predict.py \
-    --model results/$7/$1/$3.py \
-    --param results/$7/$1/epoch-$2.model \
+    --model results/$1/$3.py \
+    --param results/$1/epoch-$2.model \
     --test_sat_dir data/mass_$4/test/sat \
     --channels $5 \
     --offset 8 \
     --gpu $6 &
 }
 
-epoch=200
+epoch=350
 model=MnihCNN_cis
 dataset=merged
 channels=3
-dname=cis
 
-#predict MnihCNN_multi_2015-12-21_10-45-53 $epoch $model $dataset $channels 0 $dname
-#predict MnihCNN_multi_2015-12-21_10-45-53_10 $epoch $model $dataset $channels 2 $dname
-#predict MnihCNN_multi_2015-12-21_10-45-53_40 $epoch $model $dataset $channels 3 $dname
-#predict MnihCNN_multi_2015-12-21_10-45-53_44 $epoch $model $dataset $channels 4 $dname
-#predict MnihCNN_multi_2015-12-21_10-45-53_46 $epoch $model $dataset $channels 5 $dname
-#predict MnihCNN_multi_2015-12-21_10-45-53_47 $epoch $model $dataset $channels 6 $dname
-#predict MnihCNN_multi_2015-12-21_10-45-53_67 $epoch $model $dataset $channels 7 $dname
-#predict MnihCNN_multi_2015-12-21_10-45-53_99 $epoch $model $dataset $channels 8 $dname
+function predict_(){
+    predict $1 $epoch $model $dataset $channels $2
+}
 
-predict MnihCNN_cis_2015-12-21_12-48-31 $epoch $model $dataset $channels 0 $dname
-predict MnihCNN_cis_2015-12-21_12-48-31_24 $epoch $model $dataset $channels 2 $dname
-predict MnihCNN_cis_2015-12-21_12-48-31_40 $epoch $model $dataset $channels 3 $dname
-predict MnihCNN_cis_2015-12-21_12-48-31_44 $epoch $model $dataset $channels 4 $dname
-predict MnihCNN_cis_2015-12-21_12-48-31_46 $epoch $model $dataset $channels 5 $dname
-predict MnihCNN_cis_2015-12-21_12-48-31_47 $epoch $model $dataset $channels 6 $dname
-predict MnihCNN_cis_2015-12-21_12-48-31_67 $epoch $model $dataset $channels 7 $dname
-predict MnihCNN_cis_2015-12-21_12-48-31_99 $epoch $model $dataset $channels 8 $dname
+# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-18 0
+# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-20_44 2
+# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-19 3
+# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-20_46 4
+# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-19_40 5
+# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-20_47 6
+# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-20 7
+# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-20_99 8
+predict_ MnihCNN_cis_2015-12-28_04-40-30 0
+predict_ MnihCNN_cis_2015-12-28_04-40-30_1.554376 2
+predict_ MnihCNN_cis_2015-12-28_04-40-30_1.609452 3
+predict_ MnihCNN_cis_2015-12-28_04-40-30_1.670797 4
+predict_ MnihCNN_cis_2015-12-28_04-40-30_1.770513 5
+predict_ MnihCNN_cis_2015-12-28_04-40-30_1.876234 6
+predict_ MnihCNN_cis_2015-12-28_04-40-30_1.88174 7
+predict_ MnihCNN_cis_2015-12-28_04-40-30_3.295603 8

@@ -309,7 +309,7 @@ if __name__ == '__main__':
         model, optimizer = one_epoch(args, model, optimizer, epoch, True)
 
         # if epoch == 1 or epoch % args.snapshot == 0:
-            # one_epoch(args, model, optimizer, epoch, False)
+        # one_epoch(args, model, optimizer, epoch, False)
 
         # draw curve
         draw_loss('{}/log.txt'.format(args.result_dir),

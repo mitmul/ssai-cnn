@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-sys.path.insert(0, 'scripts/utils/evaluation/build')
-
 if 'linux' in sys.platform:
     import matplotlib
     matplotlib.use('Agg')
@@ -20,7 +18,7 @@ import matplotlib.pyplot as plt
 from os.path import basename
 from os.path import exists
 from multiprocessing import Queue, Process, Array
-from evaluation import relax_precision, relax_recall
+from utils.evaluation import relax_precision, relax_recall
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--map_dir', type=str)

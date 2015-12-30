@@ -48,4 +48,6 @@ if __name__ == '__main__':
         plt.plot(get_loss(fn), c, label=model)
 
     # plt.legend()
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
     plt.savefig('sample.png')
