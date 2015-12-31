@@ -10,7 +10,7 @@ function predict() {
     --gpu $6 &
 }
 
-epoch=350
+epoch=400
 model=MnihCNN_cis
 dataset=merged
 channels=3
@@ -19,14 +19,6 @@ function predict_(){
     predict $1 $epoch $model $dataset $channels $2
 }
 
-# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-18 0
-# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-20_44 2
-# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-19 3
-# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-20_46 4
-# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-19_40 5
-# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-20_47 6
-# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-20 7
-# predict_ predict_ MnihCNN_multi_2015-12-28_04-35-20_99 8
 predict_ MnihCNN_cis_2015-12-28_04-40-30 0
 predict_ MnihCNN_cis_2015-12-28_04-40-30_1.554376 2
 predict_ MnihCNN_cis_2015-12-28_04-40-30_1.609452 3

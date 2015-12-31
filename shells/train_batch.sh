@@ -13,14 +13,15 @@ function train() {
     --train_label_db data/mass_merged/lmdb/train_map \
     --valid_ortho_db data/mass_merged/lmdb/valid_sat \
     --valid_label_db data/mass_merged/lmdb/valid_map \
+    --dataset_size $3 \
     > mnih_$2.log 2>&1 < /dev/null &
 }
 
-train 0 cis
-train 2 cis
-train 3 cis
-train 4 cis
-train 5 cis
-train 6 cis
-train 7 cis
-train 8 cis
+train 0 cis 0.1
+train 2 cis 0.1
+train 3 cis 0.1
+train 4 cis 0.1
+train 5 cis 0.1
+train 6 cis 0.1
+train 7 cis 0.1
+train 8 cis 0.1

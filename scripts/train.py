@@ -27,6 +27,7 @@ def create_args():
     parser.add_argument('--gpu', type=int, default=0)
     parser.add_argument('--epoch', type=int, default=10000)
     parser.add_argument('--batchsize', type=int, default=128)
+    parser.add_argument('--dataset_size', type=float, default=1.0)
     parser.add_argument('--aug_threads', type=int, default=8)
     parser.add_argument('--snapshot', type=int, default=10)
     parser.add_argument('--resume_model', type=str, default=None)
@@ -156,6 +157,7 @@ def create_minibatch(args, o_cur, l_cur, batch_queue):
     logging.info('random skip:{}'.format(skip))
     x_minibatch = []
     y_minibatch = []
+    i = 0
     while True:
         o_key, o_val = o_cur.item()
         l_key, l_val = l_cur.item()
@@ -182,8 +184,11 @@ def create_minibatch(args, o_cur, l_cur, batch_queue):
             x_minibatch = np.asarray(x_minibatch, dtype=np.uint8)
             y_minibatch = np.asarray(y_minibatch, dtype=np.uint8)
             batch_queue.put((x_minibatch, y_minibatch))
+            i += len(x_minibatch)
             x_minibatch = []
             y_minibatch = []
+            if i > args.N * args.dataset_size:
+                break
 
         if ((not o_ret) and (not l_ret)):
             break
