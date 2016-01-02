@@ -25,7 +25,7 @@ def create_args():
     parser.add_argument('--model', type=str,
                         default='models/MnihCNN_multi.py')
     parser.add_argument('--gpu', type=int, default=0)
-    parser.add_argument('--epoch', type=int, default=10000)
+    parser.add_argument('--epoch', type=int, default=400)
     parser.add_argument('--batchsize', type=int, default=128)
     parser.add_argument('--dataset_size', type=float, default=1.0)
     parser.add_argument('--aug_threads', type=int, default=8)

@@ -12,6 +12,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--result_dir', type=str)
     parser.add_argument('--epoch', type=int)
+    parser.add_argument('--size', type=str)
     args = parser.parse_args()
 
     fns = glob.glob(
@@ -36,6 +37,9 @@ if __name__ == '__main__':
         os.mkdir(out_dir)
     for imname in pred_npys.keys():
         pred_npys[imname] /= len(preds[imname])
+        if args.size is not None:
+            lt, rb = map(int, args.size.split(','))
+            pred_npys[imname] = pred_npys[imname][lt:-rb, lt:-rb]
         np.save('{}/{}'.format(out_dir, imname), pred_npys[imname])
         cv.imwrite('{}/{}.jpg'.format(out_dir, imname),
                    pred_npys[imname] * 255)
