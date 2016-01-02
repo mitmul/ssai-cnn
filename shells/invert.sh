@@ -8,6 +8,7 @@ function invert() {
     --gpu $4 \
     --lambda_tv $5 \
     --img_fn $6 \
+    --opt MomentumSGD \
     > nohup.out 2>&1 < /dev/null &
 }
 
@@ -29,12 +30,12 @@ function batch_invert() {
 }
 
 model=models/MnihCNN_cis.py
-result_dir=results
-epoch=315
+result_dir=results/cis_1.0/MnihCNN_cis_2015-12-28_04-40-30
+epoch=400
 param=$result_dir/epoch-$epoch.model
 img_dir=data/mass_merged/trans_test
 
-img_fns=("1" "2" "3" "4" "5")
+img_fns=("1" "2" "3" "4" "5" "6" "7" "8" "9" "10")
 echo $img_fns
 echo $param
 for img_fn in ${img_fns[@]}; do
