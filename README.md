@@ -85,3 +85,9 @@ $ bash shells/train_batch.sh
 ```
 159.348674296
 ```
+
+# After prediction for single MA
+
+```
+$ bash shells/predict.sh
+$ python scripts/integrate.py --result_dir results --epoch 400 --size 7,60

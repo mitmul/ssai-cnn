@@ -1,5 +1,6 @@
 #! /bin/bash
 
+export PYTHONPATH=".":$PYTHONPATH
 
 function resume() {
     echo $1
@@ -18,11 +19,11 @@ function resume() {
     > mnih_multi.log 2>&1 < /dev/null &
 }
 
-resume 0 results/MnihCNN_multi_2015-12-21_10-45-53    296
-resume 2 results/MnihCNN_multi_2015-12-21_10-45-53_10 298
-resume 3 results/MnihCNN_multi_2015-12-21_10-45-53_40 296
-resume 4 results/MnihCNN_multi_2015-12-21_10-45-53_44 299
-resume 5 results/MnihCNN_multi_2015-12-21_10-45-53_46 300
-resume 6 results/MnihCNN_multi_2015-12-21_10-45-53_47 298
-resume 7 results/MnihCNN_multi_2015-12-21_10-45-53_67 296
-resume 8 results/MnihCNN_multi_2015-12-21_10-45-53_99 298
+resume 0 results/MnihCNN_multi_2016-01-03_07-05-05_2.518014 100
+resume 2 results/MnihCNN_multi_2016-01-03_07-05-05_2.121294 100
+resume 3 results/MnihCNN_multi_2016-01-03_07-05-05_2.114848 100
+resume 4 results/MnihCNN_multi_2016-01-03_07-05-05_1.622673 100
+resume 5 results/MnihCNN_multi_2016-01-03_07-05-05_1.500833 100
+resume 6 results/MnihCNN_multi_2016-01-03_07-05-05_1.455 100
+resume 7 results/MnihCNN_multi_2016-01-03_07-05-05 100
+resume 8 results/MnihCNN_multi_2016-01-03_07-05-04 100

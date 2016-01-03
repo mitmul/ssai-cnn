@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import re
 import os
@@ -99,13 +100,16 @@ class InvertFeature(object):
         img = img.transpose(2, 0, 1)
         self.img = img.astype(np.float32)
 
-    def deprocess(self, img):
-        img = img.transpose(1, 2, 0)
-        img *= self.std
-        img += self.mean
-        img = np.clip(img, 0, 255).astype(np.uint8)
+    def create_target(self):
+        xp = cuda.cupy if self.args.gpu >= 0 else np
+        self.x0_data = xp.asarray(self.img[np.newaxis].copy())
+        x0 = chainer.Variable(self.x0_data, volatile=True)
 
-        return img
+        # Extract feature from target image
+        self.y0 = self.extract_feature(x0)
+        self.y0.volatile = False
+        y0_sigma = np.linalg.norm(cuda.to_cpu(self.y0.data))
+        self.lambda_euc = self.args.x0_sigma ** 2 / y0_sigma ** 2
 
     def extract_feature(self, x):
         xp = cuda.cupy if self.args.gpu >= 0 else np
@@ -119,16 +123,13 @@ class InvertFeature(object):
             middle = chainer.Variable(m)
             return middle
 
-    def create_target(self):
-        xp = cuda.cupy if self.args.gpu >= 0 else np
-        self.x0_data = xp.asarray(self.img[np.newaxis].copy())
-        x0 = chainer.Variable(self.x0_data, volatile=True)
+    def deprocess(self, img):
+        img = img.transpose(1, 2, 0)
+        img *= self.std
+        img += self.mean
+        img = np.clip(img, 0, 255).astype(np.uint8)
 
-        # Extract feature from target image
-        self.y0 = self.extract_feature(x0)
-        self.y0.volatile = False
-        y0_sigma = np.linalg.norm(cuda.to_cpu(self.y0.data))
-        self.lambda_euc = self.args.x0_sigma ** 2 / y0_sigma ** 2
+        return img
 
     def create_image_plane(self):
         xp = cuda.cupy if self.args.gpu >= 0 else np
@@ -182,16 +183,6 @@ class InvertFeature(object):
         return self.loss
 
 
-def write_result(args, inverter, x):
-    result = inverter.deprocess(cuda.to_cpu(x.data)[0])
-    if args.channels < 0:
-        cv.imwrite('{}/{}_{}_result.png'.format(
-            inverter.out_dir, inverter.img_id, args.layer), result)
-    else:
-        cv.imwrite('{}/{}_{}_{}_result.png'.format(
-            inverter.out_dir, inverter.img_id, args.layer, args.channels),
-            result)
-
 if __name__ == '__main__':
     args = get_args()
 
@@ -204,24 +195,28 @@ if __name__ == '__main__':
     optimal_x = None
     i = 0
     while True:
-        try:
-            if args.opt == 'MomentumSGD':
-                inverter.opt.lr = inverter.lr_schedule[i]
-            x = inverter.x_link.W
-            inverter.opt.update(inverter, x)
+        if args.opt == 'MomentumSGD':
+            inverter.opt.lr = inverter.lr_schedule[i]
+        x = inverter.x_link.W
+        inverter.opt.update(inverter, x)
 
-            l = cuda.to_cpu(inverter.loss.data)
-            if l < min_error:
-                optimal_x = x
-                min_error = l
-            print('{}:\tloss:{}\tmin_loss:{}'.format(i, l, min_error))
+        l = cuda.to_cpu(inverter.loss.data)
+        if l < min_error:
+            optimal_x = x
+            min_error = l
+        print('{}:\tloss:{}\tmin_loss:{}'.format(i, l, min_error))
 
-            i += 1
-            if args.opt == 'MomentumSGD' and i >= len(inverter.lr_schedule):
-                break
-            if args.opt == 'Adam' and i == args.max_iter:
-                break
-        except KeyboardInterrupt:
-            write_result(args, inverter, x)
+        i += 1
+        if args.opt == 'MomentumSGD' and i >= len(inverter.lr_schedule):
+            break
+        if args.opt == 'Adam' and i == args.max_iter:
+            break
 
-    write_result(args, inverter, optimal_x)
+    result = inverter.deprocess(cuda.to_cpu(optimal_x.data)[0])
+    if args.channels < 0:
+        cv.imwrite('{}/{}_{}_result.png'.format(
+            inverter.out_dir, inverter.img_id, args.layer), result)
+    else:
+        cv.imwrite('{}/{}_{}_{}_result.png'.format(
+            inverter.out_dir, inverter.img_id, args.layer, args.channels),
+            result)

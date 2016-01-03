@@ -307,7 +307,9 @@ if __name__ == '__main__':
     logging.info('start training...')
     for epoch in six.moves.range(args.epoch_offset + 1, args.epoch + 1):
         # learning rate reduction
-        if args.opt == 'MomentumSGD' and epoch % args.lr_decay_freq == 0:
+        if args.opt == 'MomentumSGD' \
+                and epoch % args.lr_decay_freq == 0 \
+                and epoch < 200:
             optimizer.lr *= args.lr_decay_ratio
 
         logging.info('learning rate:{}'.format(optimizer.lr))

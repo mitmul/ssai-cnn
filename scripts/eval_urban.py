@@ -121,7 +121,7 @@ if __name__ == '__main__':
     parser.add_argument('--test_map_dir', type=str)
     parser.add_argument('--pad', type=int, default=24)
     parser.add_argument('--offset', type=int, default=8)
-    parser.add_argument('--steps', type=int, default=256)
+    parser.add_argument('--steps', type=int, default=1024)
     args = parser.parse_args()
 
     pred_fns = []
@@ -136,7 +136,7 @@ if __name__ == '__main__':
 
     # threshold, channels, (positive, prec_tp, true, recall_tp)
     n_ch = np.load(list(pred_fns.items())[0][1]).shape[2]
-    evals = np.zeros((256, n_ch, 4))
+    evals = np.zeros((args.steps, n_ch, 4))
     for label_fn in glob.glob('{}/*.tif*'.format(args.test_map_dir)):
         evals += get_complex_regions(args, label_fn, pred_fns)
         print(label_fn)

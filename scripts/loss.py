@@ -42,12 +42,20 @@ if __name__ == '__main__':
         plt.legend()
         plt.savefig('sample.png')
 
+    cis = None
+    multi = None
     for fn in glob.glob('{}/*/log.txt'.format(args.result_dir)):
         model = re.search('MnihCNN_([a-zA-Z]+)', fn).groups()[0]
         c = 'b-' if model == 'cis' else 'r-'
-        plt.plot(get_loss(fn), c, label=model)
+        plt.plot(get_loss(fn)[:400], c)
+        if model == 'cis':
+            cis = get_loss(fn)[:400]
+        else:
+            multi = get_loss(fn)[:400]
 
-    # plt.legend()
+    plt.plot(multi, 'r-', label='ours (multi-channel)')
+    plt.plot(cis, 'b-', label='ours (multi-channel with CIS)')
+    plt.legend()
     plt.xlabel('epoch')
-    plt.ylabel('loss')
-    plt.savefig('sample.png')
+    plt.ylabel('cross entropy loss')
+    plt.savefig('loss_curve.png')
