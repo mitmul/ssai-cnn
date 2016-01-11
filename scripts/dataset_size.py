@@ -41,7 +41,7 @@ if __name__ == '__main__':
             road = np.load('{}/pre_rec_2.npy'.format(d))
             bldg_rec = bldg[get_breakeven(bldg)][1]
             road_rec = road[get_breakeven(road)][1]
-            print('{}\t{}\t{}'.format(ratio, bldg_rec, road_rec))
+            print('[{}, {}, {}]'.format(ratio, bldg_rec, road_rec))
 
             bldg_recs.append((ratio, bldg_rec))
             road_recs.append((ratio, road_rec))

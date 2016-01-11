@@ -37,14 +37,14 @@ def tile_W(W, pad=1):
                        n_side * w + (n_side + 1) * pad, 3),
                       dtype=np.uint8)
     W = W if not args.gpu >= 0 else xp.asnumpy(W)
-    W -= W.min()
-    W /= W.max()
-    W = (W * 255).astype(np.uint8)
+    # W -= W.min()
+    # W /= W.max()
+    # W = (W * 255).astype(np.uint8)
     for i in range(n_patch):
         patch = W[i].transpose(1, 2, 0)
-        # patch -= patch.min()
-        # patch /= patch.max()
-        # patch = (patch * 255).astype(np.uint8)
+        patch -= patch.min()
+        patch /= patch.max()
+        patch = (patch * 255).astype(np.uint8)
 
         y = i // n_side
         y = pad * (y + 1) + y * h

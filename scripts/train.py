@@ -25,7 +25,7 @@ def create_args():
     parser.add_argument('--model', type=str,
                         default='models/MnihCNN_multi.py')
     parser.add_argument('--gpu', type=int, default=0)
-    parser.add_argument('--epoch', type=int, default=400)
+    parser.add_argument('--epoch', type=int, default=1000)
     parser.add_argument('--batchsize', type=int, default=128)
     parser.add_argument('--dataset_size', type=float, default=1.0)
     parser.add_argument('--aug_threads', type=int, default=8)
@@ -315,8 +315,8 @@ if __name__ == '__main__':
         logging.info('learning rate:{}'.format(optimizer.lr))
         model, optimizer = one_epoch(args, model, optimizer, epoch, True)
 
-        # if epoch == 1 or epoch % args.snapshot == 0:
-        # one_epoch(args, model, optimizer, epoch, False)
+        if epoch == 1 or epoch % args.snapshot == 0:
+            one_epoch(args, model, optimizer, epoch, False)
 
         # draw curve
         draw_loss('{}/log.txt'.format(args.result_dir),

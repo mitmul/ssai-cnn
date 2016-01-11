@@ -17,11 +17,11 @@ function train() {
     > mnih_$2.log 2>&1 < /dev/null &
 }
 
-train 0 cis 0.3
-train 2 cis 0.3
-train 3 cis 0.3
-train 4 cis 0.3
-train 5 cis 0.3
-train 6 cis 0.3
-train 7 cis 0.3
-train 8 cis 0.3
+train 0 cis 1.0
+train 2 cis 1.0
+train 3 cis 1.0
+train 4 cis 1.0
+train 5 cis 1.0
+train 6 cis 1.0
+train 7 cis 1.0
+train 8 cis 1.0
