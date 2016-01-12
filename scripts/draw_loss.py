@@ -22,7 +22,7 @@ def draw_loss(logfile, outfile):
         if 'iter' not in line and 'train loss' in line:
             tr_l = float(re.search('loss:([0-9\.e-]+)', line).groups()[0])
             train_epoch_loss.append([epoch, tr_l])
-        if 'iter' not in line and 'validation loss' in line:
+        if 'iter' not in line and 'validate loss' in line:
             va_l = float(re.search('loss:([0-9\.e-]+)', line).groups()[0])
             valid_epoch_loss.append([epoch, va_l])
 
