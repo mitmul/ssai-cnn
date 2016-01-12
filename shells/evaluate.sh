@@ -1,38 +1,30 @@
 #! /bin/bash
 
-epoch=250
+export PYTHONPATH=".":$PYTHONPATH
+
+epoch=200
 dataset=merged
 channels=3
-offset=8
 pad=24
-relax=0
-steps=512
+relax=3
+steps=256
 
 function evaluate() {
-    nohup python scripts/evaluate.py \
+    nohup python scripts/evaluate_single.py \
     --map_dir data/mass_$dataset/test/map \
     --result_dir $1/prediction_$epoch \
     --channel $channels \
-    --offset $offset \
+    --offset $2 \
     --pad $pad \
     --relax $relax \
     --steps $steps &
 }
 
-evaluate results/MnihCNN_multi_2015-12-21_10-45-53
-evaluate results/MnihCNN_multi_2015-12-21_10-45-53_10
-evaluate results/MnihCNN_multi_2015-12-21_10-45-53_40
-evaluate results/MnihCNN_multi_2015-12-21_10-45-53_44
-evaluate results/MnihCNN_multi_2015-12-21_10-45-53_46
-evaluate results/MnihCNN_multi_2015-12-21_10-45-53_47
-evaluate results/MnihCNN_multi_2015-12-21_10-45-53_67
-evaluate results/MnihCNN_multi_2015-12-21_10-45-53_99
-
-# evaluate MnihCNN_cis_2015-12-21_12-48-31 $epoch $dataset $channels $offset $pad
-# evaluate MnihCNN_cis_2015-12-21_12-48-31_24 $epoch $dataset $channels $offset $pad
-# evaluate MnihCNN_cis_2015-12-21_12-48-31_40 $epoch $dataset $channels $offset $pad
-# evaluate MnihCNN_cis_2015-12-21_12-48-31_44 $epoch $dataset $channels $offset $pad
-# evaluate MnihCNN_cis_2015-12-21_12-48-31_46 $epoch $dataset $channels $offset $pad
-# evaluate MnihCNN_cis_2015-12-21_12-48-31_47 $epoch $dataset $channels $offset $pad
-# evaluate MnihCNN_cis_2015-12-21_12-48-31_67 $epoch $dataset $channels $offset $pad
-# evaluate MnihCNN_cis_2015-12-21_12-48-31_99 $epoch $dataset $channels $offset $pad
+evaluate results/MnihCNN_cis_2016-01-11_05-16-47 0
+evaluate results/MnihCNN_cis_2016-01-11_05-16-47_1.382364 1
+evaluate results/MnihCNN_cis_2016-01-11_05-16-47_1.480355 2
+evaluate results/MnihCNN_cis_2016-01-11_05-16-47_1.496888 3
+evaluate results/MnihCNN_cis_2016-01-11_05-16-47_1.551013 4
+evaluate results/MnihCNN_cis_2016-01-11_05-16-47_1.645192 5
+evaluate results/MnihCNN_cis_2016-01-11_05-16-47_1.709271 6
+evaluate results/MnihCNN_cis_2016-01-11_05-16-47_2.108314 7

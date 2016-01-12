@@ -1,6 +1,6 @@
 #! /bin/bash
 
-epoch=400
+epoch=200
 model=MnihCNN_cis
 dataset=merged
 channels=3
@@ -15,11 +15,11 @@ function predict() {
     --gpu $3 &
 }
 
-predict results/MnihCNN_cis_2016-01-04_07-05-13_2.773944 0 0
-predict results/MnihCNN_cis_2016-01-04_07-05-13_2.128675 1 2
-predict results/MnihCNN_cis_2016-01-04_07-05-13_2.047947 2 3
-predict results/MnihCNN_cis_2016-01-04_07-05-13_2.009506 3 4
-predict results/MnihCNN_cis_2016-01-04_07-05-13_1.633745 4 5
-predict results/MnihCNN_cis_2016-01-04_07-05-13 5 6
-predict results/MnihCNN_cis_2016-01-04_07-05-12 6 7
-predict results/MnihCNN_cis_2016-01-04_07-05-11 7 8
+predict results/MnihCNN_cis_2016-01-11_05-16-47 0 0
+predict results/MnihCNN_cis_2016-01-11_05-16-47_1.382364 1 2
+predict results/MnihCNN_cis_2016-01-11_05-16-47_1.480355 2 3
+predict results/MnihCNN_cis_2016-01-11_05-16-47_1.496888 3 4
+predict results/MnihCNN_cis_2016-01-11_05-16-47_1.551013 4 5
+predict results/MnihCNN_cis_2016-01-11_05-16-47_1.645192 5 6
+predict results/MnihCNN_cis_2016-01-11_05-16-47_1.709271 6 7
+predict results/MnihCNN_cis_2016-01-11_05-16-47_2.108314 7 8
