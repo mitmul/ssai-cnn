@@ -23,7 +23,7 @@ class MnihCNN_multi(chainer.Chain):
         h = F.max_pooling_2d(h, 2, 1)
         h = F.relu(self.conv2(h))
         h = F.relu(self.conv3(h))
-        h = F.relu(self.fc4(h))
+        h = F.dropout(F.relu(self.fc4(h)), train=self.train)
         h = self.fc5(h)
         h = F.reshape(h, (x.data.shape[0], 3, 16, 16))
 

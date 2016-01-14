@@ -2,7 +2,7 @@
 
 export PYTHONPATH=".":$PYTHONPATH
 
-epoch=200
+epoch=150
 dataset=merged
 channels=3
 pad=24

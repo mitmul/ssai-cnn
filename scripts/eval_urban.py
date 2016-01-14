@@ -121,7 +121,7 @@ if __name__ == '__main__':
     parser.add_argument('--test_map_dir', type=str)
     parser.add_argument('--pad', type=int, default=24)
     parser.add_argument('--offset', type=int, default=8)
-    parser.add_argument('--steps', type=int, default=1024)
+    parser.add_argument('--steps', type=int, default=256)
     args = parser.parse_args()
 
     pred_fns = []

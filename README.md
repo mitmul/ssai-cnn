@@ -84,24 +84,14 @@ MnihCNN                       | 0.9150          | 0.8873
 MnihCNN + CRF                 | 0.9211          | 0.8904
 MnihCNN + Post-processing net | 0.9203          | 0.9006
 
-## Step = 256
+## Multi-channel models (epoch = 200)
 
-Model                              | Building-channel | Road-channel | epoch
-:--------------------------------- | :--------------- | :----------- | :----
-ours (multi-channel with MA)       | 0.95132348       | 0.8996919    | 150
-ours (multi-channel with CIS + MA) | 0.95229794       | 0.90027631   | 150
-ours (multi-channel with MA)       | 0.9516143        | 0.90166159   | 200
-ours (multi-channel with CIS)      | 0.940134         | 0.890475     | 200
-ours (multi-channel with CIS + MA) | 0.95276838       | 0.90142274   | 200
-
-## Step = 1024
-
-Model                              | Building-channel | Road-channel | epoch
-:--------------------------------- | :--------------- | :----------- | :----
-ours (multi-channel with MA)       | 0.95152357       | 0.8996919    | 150
-ours (multi-channel with CIS + MA) | 0.95183038       | 0.90027631   | 150
-ours (multi-channel with MA)       | 0.95144516       | 0.90166159   | 200
-ours (multi-channel with CIS + MA) | 0.95298734       | 0.90104864   | 200
+Model                              | Building-channel | Road-channel
+:--------------------------------- | :--------------- | :-------------
+ours (multi-channel)               | 0.938915         | 0.890997
+ours (multi-channel with MA)       | 0.9516143        | 0.90166159
+ours (multi-channel with CIS)      | 0.940134         | 0.890475
+ours (multi-channel with CIS + MA) | **0.95276838**   | **0.90142274**
 
 # x0_sigma for inverting feature maps
 
@@ -113,6 +103,7 @@ ours (multi-channel with CIS + MA) | 0.95298734       | 0.90104864   | 200
 
 ```
 $ bash shells/predict.sh
-$ python scripts/integrate.py --result_dir results --epoch 400 --size 7,60
-$ PYTHONPATH=".":$PYTHONPATH python scripts/evaluate.py --map_dir data/mass_merged/test/map --result_dir results/integrated_150 --channel 3 --offset 8 --relax 3 --steps 1024
+$ python scripts/integrate.py --result_dir results --epoch 200 --size 7,60
+$ PYTHONPATH=".":$PYTHONPATH python scripts/evaluate.py --map_dir data/mass_merged/test/map --result_dir results/integrated_200 --channel 3 --offset 8 --relax 3 --steps 256
+$ PYTHONPATH="." python scripts/eval_urban.py --result_dir results/integrated_200 --test_map_dir data/mass_merged/test/map --steps 256
 ```

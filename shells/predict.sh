@@ -1,6 +1,6 @@
 #! /bin/bash
 
-epoch=200
+epoch=400
 model=MnihCNN_cis
 dataset=merged
 channels=3

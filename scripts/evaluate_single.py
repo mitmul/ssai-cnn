@@ -183,4 +183,4 @@ if __name__ == '__main__':
         plt.savefig('%s/pr_curve_%d.png' % (eval_dir, c))
         np.save('%s/pre_rec_%d' % (eval_dir, c), pre_rec)
 
-        print(breakeven_pt)
+        print('result:', c, breakeven_pt)
