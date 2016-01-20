@@ -25,7 +25,7 @@ def create_args():
     parser.add_argument('--model', type=str,
                         default='models/MnihCNN_multi.py')
     parser.add_argument('--gpu', type=int, default=0)
-    parser.add_argument('--epoch', type=int, default=1000)
+    parser.add_argument('--epoch', type=int, default=400)
     parser.add_argument('--batchsize', type=int, default=128)
     parser.add_argument('--dataset_size', type=float, default=1.0)
     parser.add_argument('--aug_threads', type=int, default=8)
@@ -193,7 +193,6 @@ def create_minibatch(args, o_cur, l_cur, batch_queue):
         if ((not o_ret) and (not l_ret)):
             break
 
-    logging.info('create_minibatch finished')
     for _ in six.moves.range(args.aug_threads):
         batch_queue.put(None)
 
@@ -269,10 +268,8 @@ def one_epoch(args, model, optimizer, epoch, train):
 
     # wait for threads
     batch_worker.join()
-    logging.info('batch_worker terminated')
     for w in aug_workers:
         w.terminate()
-        logging.info('aug_worker terminated')
 
     if train and (epoch == 1 or epoch % args.snapshot == 0):
         model_fn = '{}/epoch-{}.model'.format(args.result_dir, epoch)
@@ -306,12 +303,6 @@ if __name__ == '__main__':
     # start logging
     logging.info('start training...')
     for epoch in six.moves.range(args.epoch_offset + 1, args.epoch + 1):
-        # learning rate reduction
-        if args.opt == 'MomentumSGD' \
-                and epoch % args.lr_decay_freq == 0 \
-                and epoch < 200:
-            optimizer.lr *= args.lr_decay_ratio
-
         logging.info('learning rate:{}'.format(optimizer.lr))
         model, optimizer = one_epoch(args, model, optimizer, epoch, True)
 
@@ -321,3 +312,10 @@ if __name__ == '__main__':
         # draw curve
         draw_loss('{}/log.txt'.format(args.result_dir),
                   '{}/log.png'.format(args.result_dir))
+
+        # learning rate reduction
+        if args.opt == 'MomentumSGD' \
+                and epoch % args.lr_decay_freq == 0:
+            optimizer.lr *= args.lr_decay_ratio
+
+        logging.info('-' * 20)

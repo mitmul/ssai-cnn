@@ -52,3 +52,17 @@ Model                              | Building-channel | Road-channel
 :--------------------------------- | :--------------- | :-----------
 ours (multi-channel with MA)       | 0.95204987       | 0.90253623
 ours (multi-channel with CIS + MA) | 0.95251664       | 0.90148289
+
+## Step = 256, epoch = 200, dropout
+
+Model                              | Building-channel | Road-channel
+:--------------------------------- | :--------------- | :-----------
+ours (multi-channel with MA)       | 0.946714         | 0.903493
+ours (multi-channel with CIS + MA) | 0.947017         | 0.905389
+
+## Step = 256, epoch = 400, dropout
+
+Model                              | Building-channel | Road-channel
+:--------------------------------- | :--------------- | :-----------
+ours (multi-channel with MA)       | 0.946714         | 0.903493
+ours (multi-channel with CIS + MA) | 0.947017         | 0.905389
