@@ -89,8 +89,8 @@ def get_complex_regions(args, label_fn, pred_fns):
                 road_ch = np.array(l_patch == 2, dtype=np.int32)
                 l_patch = [bgnd_ch, bldg_ch, road_ch]
 
-                num_bldg_pix = np.sum(bldg_ch == 1)
-                num_road_pix = np.sum(road_ch == 1)
+                num_bldg_pix = np.sum(bldg_ch)
+                num_road_pix = np.sum(road_ch)
                 if ((num_bldg_pix > (PATCH_PIXELS * NUM_RATIO)) and
                         (num_road_pix > (PATCH_PIXELS * NUM_RATIO))):
                     region_eval = []
