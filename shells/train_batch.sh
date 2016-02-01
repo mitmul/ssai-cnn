@@ -9,19 +9,14 @@ function train() {
     --seed $1 \
     --gpu $1 \
     --model models/MnihCNN_$2.py \
-    --train_ortho_db data/mass_merged/lmdb/train_sat \
-    --train_label_db data/mass_merged/lmdb/train_map \
-    --valid_ortho_db data/mass_merged/lmdb/valid_sat \
-    --valid_label_db data/mass_merged/lmdb/valid_map \
-    --dataset_size $3 \
+    --train_ortho_db data/mass_$3/lmdb/train_sat \
+    --train_label_db data/mass_$3/lmdb/train_map \
+    --valid_ortho_db data/mass_$3/lmdb/valid_sat \
+    --valid_label_db data/mass_$3/lmdb/valid_map \
+    --dataset_size $4 \
     > mnih_$2.log 2>&1 < /dev/null &
 }
 
-train 0 cis 1.0
-train 2 cis 1.0
-train 3 cis 1.0
-train 4 cis 1.0
-train 5 cis 1.0
-train 6 cis 1.0
-train 7 cis 1.0
-train 8 cis 1.0
+# train 3 single buildings 1.0
+# train 4 single roads 1.0
+train 5 single roads_mini 1.0

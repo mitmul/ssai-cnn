@@ -132,7 +132,11 @@ if __name__ == '__main__':
     model.train = False
 
     epoch = re.search('epoch-([0-9]+)', args.param).groups()[0]
-    out_dir = '{}/prediction_{}'.format(os.path.dirname(args.model), epoch)
+    if args.offset > 1:
+        out_dir = '{}/ma_prediction_{}'.format(
+            os.path.dirname(args.model), epoch)
+    else:
+        out_dir = '{}/prediction_{}'.format(os.path.dirname(args.model), epoch)
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
     for fn in glob.glob('{}/*.tif*'.format(args.test_sat_dir)):

@@ -86,19 +86,19 @@ MnihCNN + Post-processing net | 0.9203          | 0.9006
 
 ## Multi-channel models (epoch = 400, step = 1024)
 
-Model                              | Building-channel | Road-channel
-:--------------------------------- | :--------------- | :-----------
-ours (multi-channel)               | 0.94346856       | 0.89379946
-ours (multi-channel with MA)       | 0.95231262       | 0.89971473
-ours (multi-channel with CIS)      | 0.94417078       | 0.89415726
-ours (multi-channel with CIS + MA) | 0.95280431       | 0.90071099
+Model                       | Building-channel | Road-channel
+:-------------------------- | :--------------- | :-----------
+Multi-channel               | 0.94346856       | 0.89379946
+Multi-channel with M)       | 0.95231262       | 0.89971473
+Multi-channel with CIS      | 0.94417078       | 0.89415726
+Multi-channel with CIS + MA | 0.95280431       | 0.90071099
 
 ## Test on urban areas (epoch = 400, step = 1024)
 
-Model                              | Building-channel | Road-channel
-:--------------------------------- | :--------------- | :-----------
-ours (multi-channel with MA)       | 0.962797         | 0.947224
-ours (multi-channel with CIS + MA) | 0.964499         | 0.950465
+Model                       | Building-channel | Road-channel
+:-------------------------- | :--------------- | :-----------
+Multi-channel with MA       | 0.962797         | 0.947224
+Multi-channel with CIS + MA | 0.964499         | 0.950465
 
 # x0_sigma for inverting feature maps
 

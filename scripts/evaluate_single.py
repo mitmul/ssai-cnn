@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# This script intends to be used for evaluation of a single model withoug MA
+# but the predictions are created with offset
+
+
 import sys
 if 'linux' in sys.platform:
     import matplotlib

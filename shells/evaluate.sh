@@ -2,12 +2,12 @@
 
 export PYTHONPATH=".":$PYTHONPATH
 
-epoch=150
+epoch=400
 dataset=merged
 channels=3
 pad=24
 relax=3
-steps=256
+steps=1024
 
 function evaluate() {
     nohup python scripts/evaluate_single.py \
@@ -20,11 +20,22 @@ function evaluate() {
     --steps $steps &
 }
 
-evaluate results/MnihCNN_cis_2016-01-11_05-16-47 0
-evaluate results/MnihCNN_cis_2016-01-11_05-16-47_1.382364 1
-evaluate results/MnihCNN_cis_2016-01-11_05-16-47_1.480355 2
-evaluate results/MnihCNN_cis_2016-01-11_05-16-47_1.496888 3
-evaluate results/MnihCNN_cis_2016-01-11_05-16-47_1.551013 4
-evaluate results/MnihCNN_cis_2016-01-11_05-16-47_1.645192 5
-evaluate results/MnihCNN_cis_2016-01-11_05-16-47_1.709271 6
-evaluate results/MnihCNN_cis_2016-01-11_05-16-47_2.108314 7
+function evaluate_() {
+    nohup python scripts/evaluate.py \
+    --map_dir data/mass_$dataset/test/map \
+    --result_dir $1/prediction_$epoch \
+    --channel $channels \
+    --offset $2 \
+    --pad $pad \
+    --relax $relax \
+    --steps $steps &
+}
+
+evaluate_ results/cis_1.0/MnihCNN_cis_2016-01-20_06-35-26_1.959905 1
+evaluate_ results/cis_1.0/MnihCNN_cis_2016-01-20_06-35-26_1.804084 1
+evaluate_ results/cis_1.0/MnihCNN_cis_2016-01-20_06-35-26_1.741999 1
+evaluate_ results/cis_1.0/MnihCNN_cis_2016-01-20_06-35-26_1.734032 1
+evaluate_ results/cis_1.0/MnihCNN_cis_2016-01-20_06-35-26_1.610897 1
+evaluate_ results/cis_1.0/MnihCNN_cis_2016-01-20_06-35-26_1.586655 1
+evaluate_ results/cis_1.0/MnihCNN_cis_2016-01-20_06-35-26_1.436853 1
+evaluate_ results/cis_1.0/MnihCNN_cis_2016-01-20_06-35-26 1
