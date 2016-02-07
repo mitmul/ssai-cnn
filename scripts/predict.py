@@ -68,8 +68,7 @@ def tile_patches(args, canvas, queue):
                     pred = pred.transpose((1, 2, 0))
                     canvas[y:y + args.map_size, x:x + args.map_size, :] += pred
                 else:
-                    canvas[y:y + args.map_size, x:x + args.map_size] += pred
-                    print(canvas[y:y + args.map_size, x:x + args.map_size])
+                    canvas[y:y + args.map_size, x:x + args.map_size, 0] += pred
         print('offset:{} ({} sec)'.format(d, time.time() - st))
 
 
