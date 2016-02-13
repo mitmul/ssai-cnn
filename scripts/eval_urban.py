@@ -67,6 +67,10 @@ def get_complex_regions(args, label_fn, pred_fns):
                   args.pad + args.offset - 1 + pred.shape[0],
                   args.pad + args.offset - 1:
                   args.pad + args.offset - 1 + pred.shape[1]]
+    if pred.shape[2] == 1:
+        pred = pred[:, :, 0]
+        pred = np.array([pred, pred, pred]).transpose(1, 2, 0)
+    print('pred.shape:', pred.shape)
 
     thresh_evals = []
     for thresh in tqdm(range(args.steps)):
@@ -135,7 +139,8 @@ if __name__ == '__main__':
         os.makedirs(args.out_dir)
 
     # threshold, channels, (positive, prec_tp, true, recall_tp)
-    n_ch = np.load(list(pred_fns.items())[0][1]).shape[2]
+    # n_ch = np.load(list(pred_fns.items())[0][1]).shape[2]
+    n_ch = 3
     evals = np.zeros((args.steps, n_ch, 4))
     for label_fn in glob.glob('{}/*.tif*'.format(args.test_map_dir)):
         evals += get_complex_regions(args, label_fn, pred_fns)

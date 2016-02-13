@@ -78,18 +78,19 @@ $ bash shells/train_batch.sh
 # Results
 ## Conventional methods
 
-Model                         | Mass. Buildings | Mass. Roads
-:---------------------------- | :-------------- | :----------
-MnihCNN                       | 0.9150          | 0.8873
-MnihCNN + CRF                 | 0.9211          | 0.8904
-MnihCNN + Post-processing net | 0.9203          | 0.9006
+Model                         | Mass. Buildings | Mass. Roads          | Mass.Roads-Mini 
+:---------------------------- | :-------------- | :------------------- | :--------------
+MnihCNN                       | 0.9150          | 0.8873               | N/A
+MnihCNN + CRF                 | 0.9211          | 0.8904               | N/A
+MnihCNN + Post-processing net | 0.9203          | 0.9006               | N/A
+Single-channel with MA        | 0.953766        | 0.917821 (epoch 110) | 0.902895
 
 ## Multi-channel models (epoch = 400, step = 1024)
 
 Model                       | Building-channel | Road-channel
 :-------------------------- | :--------------- | :-----------
 Multi-channel               | 0.94346856       | 0.89379946
-Multi-channel with M)       | 0.95231262       | 0.89971473
+Multi-channel with MA       | 0.95231262       | 0.89971473
 Multi-channel with CIS      | 0.94417078       | 0.89415726
 Multi-channel with CIS + MA | 0.95280431       | 0.90071099
 
@@ -97,6 +98,7 @@ Multi-channel with CIS + MA | 0.95280431       | 0.90071099
 
 Model                       | Building-channel | Road-channel
 :-------------------------- | :--------------- | :-----------
+Single-channel with MA      | 0.962133         | 0.944748
 Multi-channel with MA       | 0.962797         | 0.947224
 Multi-channel with CIS + MA | 0.964499         | 0.950465
 

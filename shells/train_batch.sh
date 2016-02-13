@@ -17,6 +17,8 @@ function train() {
     > mnih_$2.log 2>&1 < /dev/null &
 }
 
-# train 2 single buildings 1.0
-# train 3 single roads_mini 1.0
-train 4 single roads 1.0
+train 0 single buildings 1.0
+train 5 single buildings 1.0
+train 6 single buildings 1.0
+train 7 single buildings 1.0
+train 8 single buildings 1.0
