@@ -78,13 +78,13 @@ $ bash shells/train_batch.sh
 # Results
 ## Conventional methods
 
-Model                         | Mass. Buildings | Mass. Roads          | Mass.Roads-Mini 
-:---------------------------- | :-------------- | :------------------- | :--------------
-MnihCNN                       | 0.9150          | 0.8873               | N/A
-MnihCNN + CRF                 | 0.9211          | 0.8904               | N/A
-MnihCNN + Post-processing net | 0.9203          | 0.9006               | N/A
-Single-channel                | 0.9503062       | 0.91568367           | 0.89989258
-Single-channel with MA        | 0.953766        | 0.917821 (epoch 110) | 0.902895
+Model                         | Mass. Buildings | Mass. Roads            | Mass.Roads-Mini 
+:---------------------------- | :-------------- | :--------------------- | :--------------
+MnihCNN                       | 0.9150          | 0.8873                 | N/A
+MnihCNN + CRF                 | 0.9211          | 0.8904                 | N/A
+MnihCNN + Post-processing net | 0.9203          | 0.9006                 | N/A
+Single-channel                | 0.9503062       | 0.91730195 (epoch 120) | 0.89989258
+Single-channel with MA        | 0.953766        | 0.91903522 (epoch 120) | 0.902895
 
 ## Multi-channel models (epoch = 400, step = 1024)
 
