@@ -90,9 +90,9 @@ Single-channel with MA        | 0.953766        | 0.917821 (epoch 110) | 0.90289
 
 Model                       | Building-channel | Road-channel | Road-channel (fixed)
 :-------------------------- | :--------------- | :----------- | :-------------------
-Multi-channel               | 0.94346856       | 0.89379946   |
+Multi-channel               | 0.94346856       | 0.89379946   | 0.9033020025
 Multi-channel with MA       | 0.95231262       | 0.89971473   | 0.90982972
-Multi-channel with CIS      | 0.94417078       | 0.89415726   | 0.903947::
+Multi-channel with CIS      | 0.94417078       | 0.89415726   | 0.9039476538
 Multi-channel with CIS + MA | 0.95280431       | 0.90071099   | 0.91108087
 
 ## Test on urban areas (epoch = 400, step = 1024)
