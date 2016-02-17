@@ -72,13 +72,47 @@ mass_merged     | 1060928  | 30976      | 77440
 # Start Training
 
 ```
-$ bash shells/train_batch.sh
+$ CHAINER_TYPE_CHECK=0 CHAINER_SEED=$1 \
+nohup python scripts/train.py \
+--seed 0 \
+--gpu 0 \
+--model models/MnihCNN_multi.py \
+--train_ortho_db data/mass_merged/lmdb/train_sat \
+--train_label_db data/mass_merged/lmdb/train_map \
+--valid_ortho_db data/mass_merged/lmdb/valid_sat \
+--valid_label_db data/mass_merged/lmdb/valid_map \
+--dataset_size 1.0 \
+> mnih_multi.log 2>&1 < /dev/null &
+```
+
+# Prediction
+
+```
+python scripts/predict.py \
+--model results/MnihCNN_multi_2016-02-03_03-34-58/MnihCNN_multi.py \
+--param results/MnihCNN_multi_2016-02-03_03-34-58/epoch-400.model \
+--test_sat_dir data/mass_merged/test/sat \
+--channels 3 \
+--offset 8 \
+--gpu 0 &
+```
+
+# Evaluation
+
+```
+$ PYTHONPATH=".":$PYTHONPATH python scripts/evaluate.py \
+--map_dir data/mass_merged/test/map \
+--result_dir results/MnihCNN_multi_2016-02-03_03-34-58/ma_prediction_400 \
+--channel 3 \
+--offset 8 \
+--relax 3 \
+--steps 1024
 ```
 
 # Results
 ## Conventional methods
 
-Model                         | Mass. Buildings | Mass. Roads            | Mass.Roads-Mini 
+Model                         | Mass. Buildings | Mass. Roads            | Mass.Roads-Mini
 :---------------------------- | :-------------- | :--------------------- | :--------------
 MnihCNN                       | 0.9150          | 0.8873                 | N/A
 MnihCNN + CRF                 | 0.9211          | 0.8904                 | N/A

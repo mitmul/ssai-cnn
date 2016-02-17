@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# prediction with offsets using a single model
+
 import os
 import re
 import imp

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# prediction with a offset for integration of multiple results afterward
+
 import os
 import re
 import imp
