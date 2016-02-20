@@ -1,14 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import argparse
+import re
 import sys
+
+import numpy as np
+
 if 'linux' in sys.platform:
     import matplotlib
     matplotlib.use('Agg')
-import re
-import argparse
-import numpy as np
-import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt
+else:
+    import matplotlib.pyplot as plt
 
 
 def draw_loss(logfile, outfile):

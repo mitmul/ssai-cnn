@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from chainer import Chain
-import chainer.links as L
 import chainer.functions as F
-from chainer import cuda
+import chainer.links as L
+from chainer import Chain
 from chainer import Variable
+from chainer import cuda
 
 
 class VGG_cis(Chain):

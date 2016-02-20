@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+
 import numpy as np
+
 from train import get_cursor
 
 if __name__ == '__main__':

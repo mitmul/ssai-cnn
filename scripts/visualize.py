@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import imp
 import argparse
-import numpy as np
-import cv2 as cv
+import imp
+import os
+
 import matplotlib.pyplot as plt
-from chainer import serializers, Variable, cuda
+import numpy as np
+from chainer import Variable
+from chainer import cuda
+from chainer import serializers
+
+import cv2 as cv
 from train import get_cursor
 
 

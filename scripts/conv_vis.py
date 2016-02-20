@@ -2,13 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+
 import chainer
-import VGG
-import numpy as np
 import chainer.functions as F
-from chainer import serializers
+import numpy as np
 from chainer import cuda
+from chainer import serializers
 from skimage import io
+
+import VGG
 
 
 def deprocess_image(x):

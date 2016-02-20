@@ -3,17 +3,23 @@
 
 # prediction with offsets using a single model
 
+import argparse
+import ctypes
+import glob
+import imp
 import os
 import re
-import imp
-import glob
 import time
-import ctypes
-import argparse
-import cv2 as cv
+from multiprocessing import Array
+from multiprocessing import Process
+from multiprocessing import Queue
+
 import numpy as np
-from multiprocessing import Process, Queue, Array
-from chainer import cuda, serializers, Variable
+from chainer import Variable
+from chainer import cuda
+from chainer import serializers
+
+import cv2 as cv
 
 
 def get_args():

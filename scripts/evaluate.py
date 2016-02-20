@@ -1,24 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import argparse
+import ctypes
+import glob
+import os
+import re
 import sys
+from multiprocessing import Array
+from multiprocessing import Process
+from multiprocessing import Queue
+from os.path import basename
+from os.path import exists
+
+import matplotlib.pyplot as plt
+import numpy as np
+import six
+
+import cv2 as cv
+from utils.evaluation import relax_precision
+from utils.evaluation import relax_recall
+
 if 'linux' in sys.platform:
     import matplotlib
     matplotlib.use('Agg')
 
-import re
-import glob
-import ctypes
-import os
-import argparse
-import six
-import numpy as np
-import cv2 as cv
-import matplotlib.pyplot as plt
-from os.path import basename
-from os.path import exists
-from multiprocessing import Queue, Process, Array
-from utils.evaluation import relax_precision, relax_recall
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--map_dir', type=str)

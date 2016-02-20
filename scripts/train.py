@@ -1,21 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import argparse
+import imp
+import logging
 import os
 import re
-import six
-import time
-import imp
 import shutil
-import logging
-import lmdb
-import argparse
+import time
+from multiprocessing import Process
+from multiprocessing import Queue
+
 import chainer
 import numpy as np
-from chainer import cuda, optimizers, serializers, Variable
-from utils.transformer import transform
-from multiprocessing import Process, Queue
+import six
+from chainer import Variable
+from chainer import cuda
+from chainer import optimizers
+from chainer import serializers
+
+import lmdb
 from draw_loss import draw_loss
+from utils.transformer import transform
 
 
 def create_args():

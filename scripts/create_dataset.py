@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import shutil
-import os
-import time
-import glob
-import lmdb
 import argparse
+import glob
+import os
+import shutil
+import time
+
 import numpy as np
+
 import cv2 as cv
+import lmdb
 from utils.patches import divide_to_patches
 
 parser = argparse.ArgumentParser()

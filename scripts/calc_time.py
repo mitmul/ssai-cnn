@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import re
-import glob
 import argparse
-import numpy as np
+import glob
+import re
 from datetime import datetime
+
+import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--result_dir', type=str, default='results')

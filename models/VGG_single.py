@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from chainer import Chain
-import chainer.links as L
 import chainer.functions as F
+import chainer.links as L
+from chainer import Chain
 
 
 class VGG_single(Chain):

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 import glob
+import os
 
 for fn in glob.glob('results/*/*/log.txt'):
     dname = os.path.dirname(fn)

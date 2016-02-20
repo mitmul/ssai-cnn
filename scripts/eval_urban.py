@@ -1,21 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import argparse
+import glob
+import os
+import re
 import sys
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+import cv2 as cv
+from tqdm import tqdm
+from utils.evaluation import relax_precision
+from utils.evaluation import relax_recall
+
 if 'linux' in sys.platform:
     import matplotlib
     matplotlib.use('Agg')
 
-import argparse
-import os
-import re
-import glob
-import cv2 as cv
-import numpy as np
-import matplotlib.pyplot as plt
-from tqdm import tqdm
-from utils.evaluation import relax_precision
-from utils.evaluation import relax_recall
 
 PATCH_SIZE = 16
 PATCH_PIXELS = PATCH_SIZE ** 2

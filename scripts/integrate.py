@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import glob
 import argparse
-import numpy as np
-import cv2 as cv
+import glob
+import os
 from collections import defaultdict
+
+import numpy as np
+
+import cv2 as cv
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

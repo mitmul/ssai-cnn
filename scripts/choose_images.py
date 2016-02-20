@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import re
 import glob
+import re
+
 import cv2 as cv
 
 bldg_fns = glob.glob('data/mass_buildings/train/map/*.png')

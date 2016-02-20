@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 
-import re
-import os
-import imp
 import argparse
+import imp
+import os
+import re
+
 import chainer
-import cv2 as cv
-import numpy as np
 import chainer.functions as F
+import numpy as np
 from chainer import cuda
 from chainer import optimizers
 from chainer import serializers
+
+import cv2 as cv
 
 
 def get_args():

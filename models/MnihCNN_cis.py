@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import chainer
-import chainer.links as L
 import chainer.functions as F
-from chainer import cuda
+import chainer.links as L
 from chainer import Variable
+from chainer import cuda
 
 
 class MnihCNN_cis(chainer.Chain):

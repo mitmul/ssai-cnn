@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import chainer
-import chainer.links as L
 import chainer.functions as F
+import chainer.links as L
 
 
 class MnihCNN_multi(chainer.Chain):

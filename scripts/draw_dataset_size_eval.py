@@ -1,14 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import glob
+import re
 import sys
+
+import numpy as np
+
 if 'linux' in sys.platform:
     import matplotlib
     matplotlib.use('Agg')
-import re
-import glob
-import numpy as np
-import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt
+else:
+    import matplotlib.pyplot as plt
 
 model = 'cis'
 epoch = 400
