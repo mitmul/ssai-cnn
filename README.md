@@ -1,5 +1,10 @@
 This contains all codes for replicating every results in my Ph. D. thesis.
 
+If you use this code for your project, please cite this:
+```
+Shunta Saito, Takayoshi Yamashita, Yoshimitsu Aoki, "Multiple Object Extraction from Aerial Imagery with Convolutional Neural Networks", Journal of Imaging Science and Technology, Vol. 60, No. 1, pp. 10402-1-10402-9, 2015
+```
+
 # Requirements
 - Python 3.5 (conda 3.18.6 with python 3.5.0 is recommended)
   - Chainer 1.5.0.2
