@@ -1,12 +1,9 @@
-This contains all codes for replicating every results in my Ph. D. thesis.
-
-If you use this code for your project, please cite this:
-```
-Shunta Saito, Takayoshi Yamashita, Yoshimitsu Aoki, "Multiple Object Extraction from Aerial Imagery with Convolutional Neural Networks", Journal of Imaging Science and Technology, Vol. 60, No. 1, pp. 10402-1-10402-9, 2015
-```
+All codes are replicate the results written in [this paper](#reference).
 
 # Requirements
+
 - Python 3.5 (conda 3.18.6 with python 3.5.0 is recommended)
+
   - Chainer 1.5.0.2
   - Cython 0.23.4
   - NumPy 1.10.1
@@ -18,6 +15,7 @@ Shunta Saito, Takayoshi Yamashita, Yoshimitsu Aoki, "Multiple Object Extraction 
 - Boost.NumPy ([26aaa5b](https://github.com/ndarray/Boost.NumPy/tree/26aaa5b62e6170f2ccde179b46f1a49c4011fc9d))
 
 # Build Libraries
+
 ## OpenCV 3.0.0
 
 ```
@@ -34,7 +32,7 @@ If some libraries are missing, do below before compiling 3.0.0.
 $ sudo apt-get install -y libopencv-dev libtbb-dev
 ```
 
-## Boost 1.59. 0
+## Boost 1.59\. 0
 
 ```
 $ wget http://downloads.sourceforge.net/project/boost/boost/1.59.0/boost_1_59_0.tar.bz2
@@ -67,12 +65,12 @@ $ bash shells/download.sh
 $ bash shells/create_dataset.sh
 ```
 
-Dataset         | Training | Validation | Test
+    Dataset     | Training | Validation |  Test
 :-------------: | :------: | :--------: | :----:
-mass_roads      | 8580352  | 108416     | 379456
-mass_roads_mini | 1060928  | 30976      | 77440
-mass_buildings  | 1060928  | 30976      | 77440
-mass_merged     | 1060928  | 30976      | 77440
+  mass_roads    | 8580352  |   108416   | 379456
+mass_roads_mini | 1060928  |   30976    | 77440
+mass_buildings  | 1060928  |   30976    | 77440
+  mass_merged   | 1060928  |   30976    | 77440
 
 # Start Training
 
@@ -115,6 +113,7 @@ $ PYTHONPATH=".":$PYTHONPATH python scripts/evaluate.py \
 ```
 
 # Results
+
 ## Conventional methods
 
 Model                         | Mass. Buildings | Mass. Roads            | Mass.Roads-Mini
@@ -156,3 +155,16 @@ $ python scripts/integrate.py --result_dir results --epoch 200 --size 7,60
 $ PYTHONPATH=".":$PYTHONPATH python scripts/evaluate.py --map_dir data/mass_merged/test/map --result_dir results/integrated_200 --channel 3 --offset 8 --relax 3 --steps 256
 $ PYTHONPATH="." python scripts/eval_urban.py --result_dir results/integrated_200 --test_map_dir data/mass_merged/test/map --steps 256
 ```
+
+# Pre-trained models and Predicted results
+
+- [Pre-trained models](https://github.com/mitmul/ssai-cnn/wiki/Pre-trained-models)
+- [Predicted results](https://github.com/mitmul/ssai-cnn/wiki/Predicted-results)
+
+# Reference
+
+If you use this code for your project, please cite this journal paper:
+
+- [Multiple Object Extraction from Aerial Imagery with Convolutional Neural Networks](http://www.ingentaconnect.com/content/ist/jist/2016/00000060/00000001/art00003)
+- [bibtex](http://www.ingentaconnect.com/content/ist/jist/2016/00000060/00000001/art00003;jsessionid=3bmr095n0lb07.alice?format=bib)
+- `Shunta Saito, Takayoshi Yamashita, Yoshimitsu Aoki, "Multiple Object Extraction from Aerial Imagery with Convolutional Neural Networks", Journal of Imaging Science and Technology, Vol. 60, No. 1, pp. 10402-1-10402-9, 2015`
