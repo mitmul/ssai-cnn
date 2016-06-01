@@ -1,14 +1,12 @@
-All codes are replicate the results written in [this paper](#reference).
+This is an implementation of [Volodymyr Mnih's dissertation](https://www.cs.toronto.edu/~vmnih/docs/Mnih_Volodymyr_PhD_Thesis.pdf) methods on his [Massachusetts road & building dataset](https://www.cs.toronto.edu/~vmnih/data/) and my original methods that are published in [this paper](http://www.ingentaconnect.com/content/ist/jist/2016/00000060/00000001/art00003).
 
 # Requirements
 
-- Python 3.5 (conda 3.18.6 with python 3.5.0 is recommended)
-
+- Python 3.5 (anaconda with python 3.5.1 is recommended)
   - Chainer 1.5.0.2
   - Cython 0.23.4
   - NumPy 1.10.1
   - tqdm
-
 - OpenCV 3.0.0
 - lmdb 0.87
 - Boost 1.59.0
@@ -165,6 +163,6 @@ $ PYTHONPATH="." python scripts/eval_urban.py --result_dir results/integrated_20
 
 If you use this code for your project, please cite this journal paper:
 
-- [Multiple Object Extraction from Aerial Imagery with Convolutional Neural Networks](http://www.ingentaconnect.com/content/ist/jist/2016/00000060/00000001/art00003)
-- [bibtex](http://www.ingentaconnect.com/content/ist/jist/2016/00000060/00000001/art00003;jsessionid=3bmr095n0lb07.alice?format=bib)
-- `Shunta Saito, Takayoshi Yamashita, Yoshimitsu Aoki, "Multiple Object Extraction from Aerial Imagery with Convolutional Neural Networks", Journal of Imaging Science and Technology, Vol. 60, No. 1, pp. 10402-1-10402-9, 2015`
+- [Multiple Object Extraction from Aerial Imagery with Convolutional Neural Networks](http://www.ingentaconnect.com/content/ist/jist/2016/00000060/00000001/art00003) ([bibtex](http://www.ingentaconnect.com/content/ist/jist/2016/00000060/00000001/art00003;jsessionid=3bmr095n0lb07.alice?format=bib))
+
+```Shunta Saito, Takayoshi Yamashita, Yoshimitsu Aoki, "Multiple Object Extraction from Aerial Imagery with Convolutional Neural Networks", Journal of Imaging Science and Technology, Vol. 60, No. 1, pp. 10402-1-10402-9, 2015```
