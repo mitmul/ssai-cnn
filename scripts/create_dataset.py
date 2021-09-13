@@ -119,7 +119,9 @@ def create_patches(sat_patch_size, map_patch_size, stride, map_ch,
         for patch_i in range(sat_patches.shape[0]):
             sat_patch = sat_patches[patch_i]
             map_patch = map_patches[patch_i]
-            key = b'%010d' % keys[n_patches]
+            #key = b'%010d' % keys[n_patches]
+            # The below works in <Python3.5 well the above does not.
+            key = bytes('%010d' % keys[n_patches], 'ascii') 
             sat_txn.put(key, sat_patch.tobytes())
             map_txn.put(key, map_patch.tobytes())
 
