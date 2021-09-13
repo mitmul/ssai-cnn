@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -eu
+
+CURDIR=$(cd $(dirname ${BASH_SOURCE[0]}); pwd)
+CONTAINER_NAME="chainer"
+
+
+while (( $# > 0 )); do
+  just_arg=$1
+  shift 1
+
+  case ${just_arg} in
+    build)
+      nvidia-docker build -t ${CONTAINER_NAME} ${CURDIR}
+      ;;
+    run)
+      nvidia-docker run -it --rm \
+                        -v $(cd ${CURDIR}/../data;pwd):/opt/ssai-cnn/data \
+                        -e USER_ID=$(id -u) \
+                        -e GROUP_ID=$(id -u) \
+                        chainer bash
+      ;;
+    *)
+      echo "Unknown"
+      exit 1
+      ;;
+  esac
+done
